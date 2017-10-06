@@ -1,0 +1,71 @@
+\documentclass[DM,toc,lsstdraft]{lsstdoc}
+
+\setDocChangeRecord{%
+\addtohist{1.0}{2017-??-??}{Initial version.} {T.~Jenness}
+}
+
+\title{Data Access Use Cases}
+\date{\today}
+
+\author{Tim~Jenness, Jim~Bosch, Michelle~Gower, Simon~Krughoff,
+Russell~Owen, Pim~Schellart, Brian~van~Klaveren, Dominique~Boutigny}
+\setDocRef      {LDM-592} % the reference code
+\setDocUpstreamLocation{\url{https://github.com/lsst/LDM-592}}
+%
+% a short abstract
+%
+\setDocAbstract{Use Cases written by the Butler Working Group covering data discovery, data storage, and data retrieval.}
+
+\begin{document}
+%
+% the title page
+%
+\maketitle
+
+\section{Introduction}
+
+The Butler Working Group \citedsp{LDM-563} was convened in August 2017 to work on requirements and design of the Butler.
+As part of the process, Use Cases were written to anchor the requirements.
+In this document we present those Use Cases, grouped by the originating team, with labels that allow the requirements in \citeds{LDM-556} to reference them.
+
+\section{Actors}
+
+The use cases make use of a standard set of Actors.
+
+\subsection{General}
+
+\begin{description}
+\item[Observer] Observatory Operations (e.g., summit, base)
+\item[Astronomer] End User with data rights to releases
+\item[Data Quality Assessment Board] Board responsible for the quality of data releases, including approval of software versions and flagging of data quality.
+\end{description}
+
+\subsection{Staff Scientist or Staff Developer}
+
+\begin{description}
+\item[Data Facility Scientist] Data Facility Scientist (leadership?)
+\item[Pipelines Developer] Science Operations Scientist (algorithm developer)
+\item[QA Scientist] Science Operations Scientist (long term QA)
+\item[QA Collaborator] Collaborator with Science OPS (non-LSST funded)
+\item[Developer] Non-science LSST-funded developer (e.g., QSERV, Batch Processing Service, LSP)
+\item[Batch Production Operator] Production Operator for DRP (has additional privileges)
+\item[Commissioning Scientist] Scientist involved in commissioning (has additional privileges)
+\end{description}
+
+\subsection{Software Agents}
+
+\begin{description}
+\item[SuperTask] Software agent that takes input files, processes them, and supplies output files.
+\item[CI System] Software agent that runs tests (including integration tests that may involve pipeline processing) on a regular cadence
+\item[Batch Control System] Software agent that manages SuperTask execution running in the batch production environment
+\item[Harvesting Agent] Scans the file system when a job completes and stores the resulting files in the Data Backbone.
+\item[DMCS] Data Management Control System
+\end{description}
+
+\section{Architecture}
+
+
+
+\bibliography{local,lsst,lsst-dm,refs,books,refs_ads}
+
+\end{document}
