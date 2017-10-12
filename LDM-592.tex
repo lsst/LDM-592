@@ -16,6 +16,17 @@ Russell~Owen, Pim~Schellart, Brian~van~Klaveren, Dominique~Boutigny}
 %
 \setDocAbstract{Use Cases written by the Butler Working Group covering data discovery, data storage, and data retrieval.}
 
+% Macro for presenting Use Cases
+% \usecase{ID}{Title}{Description}
+\usepackage{enumitem}
+\newcommand{\usecase}[3]{%
+\subsection{\emph{#1}: #2}
+\begin{enumerate}[label=\alph*.]
+#3
+\end{enumerate}
+}
+
+
 \begin{document}
 %
 % the title page
@@ -37,7 +48,7 @@ The use cases make use of a standard set of Actors.
 \begin{description}
 \item[Observer] Observatory Operations (e.g., summit, base)
 \item[Astronomer] End User with data rights to releases
-\item[Data Quality Assessment Board] Board responsible for the quality of data releases, including approval of software versions and flagging of data quality.
+\item[Data Release Board] Board responsible for the quality of data releases, including approval of software versions and flagging of data quality.
 \end{description}
 
 \subsection{Staff Scientist or Staff Developer}
@@ -45,8 +56,8 @@ The use cases make use of a standard set of Actors.
 \begin{description}
 \item[Data Facility Scientist] Data Facility Scientist (leadership?)
 \item[Pipelines Developer] Science Operations Scientist (algorithm developer)
-\item[QA Scientist] Science Operations Scientist (long term QA)
-\item[QA Collaborator] Collaborator with Science OPS (non-LSST funded)
+\item[Validation Scientist] Science Operations Scientist (long term perofmrnace)
+\item[Validation Scientist Collaborator] Collaborator with Science OPS (non-LSST funded)
 \item[Developer] Non-science LSST-funded developer (e.g., QSERV, Batch Processing Service, LSP)
 \item[Batch Production Operator] Production Operator for DRP (has additional privileges)
 \item[Commissioning Scientist] Scientist involved in commissioning (has additional privileges)
@@ -62,9 +73,227 @@ The use cases make use of a standard set of Actors.
 \item[DMCS] Data Management Control System
 \end{description}
 
+\section{Alert Production}
+
 \section{Architecture}
 
+\usecase{ARCH1}{HDF5 Data Products}{%
 
+\item
+A Developer wants to read in some raw data files in FITS format and do test processing runs writing out FITS in one case and HDF5 in the other in order to compare performance differences.
+This will include creation of images and catalogs in both formats.
+
+\item
+From the test runs the Developer reads in the FITS coadd and the HDF5 coadd and compares the Python objects to ensure that the answers were identical.
+
+\item
+Once the outputs have been validated in HDF5 format, a mini production run is scheduled using HDF5 outputs to validate large scale performance.
+}
+
+\usecase{ARCH2}{Same dataset type, multiple format outputs}{%
+
+\item
+A Developer wants to confirm that HDF5 and FITS files produced by a task have identical content. Rather than duplicate processing, the task is configured to write each output dataset in HDF5 and in FITS format.
+
+\item
+An afterburner is used when processing is complete that reads in both forms of the output for a single dataset type, and they are analyzed to confirm that they contain the same information.
+
+}
+
+\usecase{ARCH3}{Batch processing data with EFD and updated WCS and visit metadata}{%
+
+\item
+A QA scientist wants to process all the visits taken in the u filter from an engineering night last month using a bespoke processing pipeline.
+The processing will need a number of "high-resolution" telemetry feeds from the EFD and a fully-populated data header for each visit using updated values, including an updated WCS from the L1 system.
+
+\item
+They submit their request to the batch system (either directly or through an intermediary) and wait for the results.
+
+\item
+The workflow system ensures that the correct visit metadata and EFD subset is available to the batch jobs during pre-flight.
+
+\item
+The jobs complete and the Astronomer accesses the output files and reads them into a notebook for visualization.
+
+}
+
+\usecase{ARCH4}{Submitting batch jobs via a notebook}{%
+
+\item
+A Scientist submits a processing request from a notebook to the batch processing system that will result in multiple jobs being executed.
+
+\item
+They know that each job will have created some output data in a different location but when they are signalled that the jobs have been completed they are presented with a single data repository containing all the results.
+
+}
+
+\usecase{ARCH5}{Provenance in downloaded files}{%
+
+\item
+An Astronomer downloads a coadd from the Data Access Center portal that comes with full metadata (they do not know this might be a composite dataset in the DAC).
+They want to see how it changed from the version they have from the previous data release which they were using for their research paper.
+
+\item
+They read the data description document for this release and determine where the provenance is located in the file.
+
+\item
+They read the two file headers into their Python program and they determine that this coadd did not include one visit that was included in the previous data release.
+
+\item
+They look up the PVI associated with that visit and download it from the previous data release and compare it with the PVI from the current release.
+
+}
+
+\section{Commissioning}
+
+\usecase{COMM1}{Low latency Q/A}{%
+
+\item
+A Commisioning Scientist wants to analyze commissioning data, including calibration, engineering and astronomical observations within minutes to hours of the data being taken to fine tune engineering configuration, solve data acquisition problems, identify software issues.
+
+}
+
+\usecase{COMM2}{High latency Q/A with EFD}{%
+
+\item
+The Commissioning Scientists will need to do analysis of commissiong data at the commissioning archive with access to the engineering facilities database (EFD) on latencies of days to weeks.
+
+}
+
+\usecase{COMM3}{Value added repositories}{%
+
+\item
+Commissioning scientists will create custom repositories containing specific commissioning data.
+
+\item
+They will then do additional analysis that will add value to the raw data: e.g.\ source catalogs matched to telemetry, further algorithmic outputs.
+
+\item
+These value added repositories then need to be shareable to the commissioning archive and potentially to QA collaborators.
+
+}
+
+\usecase{COMM4}{Comparison of the night's data with archived data}{%
+
+\item
+Commissioning Scientists will want to compare an analysis carried out on the current night's data to data taken the previous lunation.
+This means accessing both archived and too-new-to-be-archived data in the same environment.
+
+}
+
+\usecase{COMM5}{Lightcurve Provenance}{%
+
+\item
+Commissioning scientists will need to do analysis of lightcurve provenance.
+That is, given a set of associated source measurements for a particular set of objects, match up each epoch to the observation metadata and any relevant telemetry from the EFD to look for correlations between observational conditions, engineering information, and features in the lightcurves.
+This could also include tracking the version of the stack used to produce each epoch (though I hope the bulk reprocessing of commissioning data will help with this).
+
+}
+
+\usecase{COMM6}{Batch processing of commissioning pipelines}{%
+
+\item
+The commissioning scientists will want to build pipelines that are not exactly AP or DRP pipelines, but that will behave similarly in the sense that they will be runnable in the same batch system.
+This goes to question MQ4.
+
+}
+
+\usecase{COMM7}{Compare processing based on selection in observing or EFD metadata}{%
+
+\item
+The commissioning scientists will want to compare how the system behaves as a function of various quantities.
+An example is looking at coadds from the same part of the sky in bright sky conditions versus in dark sky conditions.
+
+}
+
+\usecase{COMM8}{Bulk reprocessing of commissioning pipelines}{%
+
+\item
+At regular intervals (perhaps coincident with major software releases), the commissioning scientists will want to run some set of the commissioning pipelines on all the data taken so far.
+
+}
+
+\usecase{COMM9}{External datasets}{%
+
+\item
+The commissioning scientists will need access to external reference datasets to compare to.
+For example, compare the width of the stellar locus from PS1 to the width from LSST processing of similar imaging data.
+
+}
+
+\usecase{COMM10}{Notebook portabiliity}{%
+
+\item
+The commissioning scientists would like to run exactly the same notebook on exactly the same data as in COMM4, but this time at the archive center.
+
+}
+
+\usecase{COMM11}{Simulated images and catalogs}{%
+
+\item
+Commissioning scientists will want to compare analyisis on commissioning data to the same analysis on simulated images or catalogs.
+
+}
+
+\usecase{COMM12}{On the fly processing of engineering data}{%
+
+\item
+Commisssioning scientists will need to spawn on the fly processing of engineering data (e.g.\ focus sweeps) that will potentially feed back to the system configuration in a relatively tight loop.
+This processing may require both one off investigatory type and more formal batch style.
+In any case, these activities will have to happen on the commissioning clusters.
+
+}
+
+\usecase{COMM13}{Calibration products pipelines}{%
+
+\item
+The commissioning scientists want to spawn computation of master calibration products on many different cadences: inter-night, daily, monthly, on release cadence.
+This will require these pipelines to run both on the commissioining cluster and the archive clusters.
+There will be a SuperTask that computes these master calibration frames and will be spun up in both contexts.
+
+}
+
+\section{Continuous Integration}
+
+\usecase{CI1}{}{%
+
+\item
+A Validation Scientist knows from experience that we will never have tests for all the possible regressions.
+They have worked with the SQuaRE team to set up continuous integration runs on significant (TB) amounts of data on weekly cadences.
+They want this to be done in the CI system.
+This provides a set of runs that can be inspected for the source of regressions even if the particular regression has no specific metric registered in SQuaSH.
+The input data needs to come from a shared source since this will likely be done on cluster resources.
+
+\item
+The outputs need to be stored in a stable, curated, shared, findable location with provenance so they can be found again.
+
+\item
+The input data needs to be disaster recoverable, but the outputs (strictly speaking) can be re-generated.
+
+}
+
+\usecase{CI2}{Export execution metadata to external apps}{%
+
+\item
+In the CI system the running code will be instrumented to produce measurements of various metrics: both technical like runtime and more algorithm related like number of sources.
+The CI system packages measurements of coded metrics from each of the potentially parallel executions of the CI pipelines.
+
+\item
+This information will be exported from the CI system and ingested into a system designed to track and discover regressions and other changes in the behavior of the system.
+
+}
+
+\usecase{CI3}{CI in cloudy environments}{%
+
+\item
+The batch production operator wants to run multiple builds and CI runs in multiple VMs within the same cluster.
+
+\item
+They want to be as efficient as possible so only allocate as many resources as absolutely needed for each run.
+The CI datasets are of order 1TB, so the batch production operator would like to keep the amount of data replicated to local disk as small as possible.
+This leads to a desire for the input repositories to reside in a storage format that plays well in the cloud ecosystem.
+
+}
 
 \bibliography{local,lsst,lsst-dm,refs,books,refs_ads}
 
