@@ -295,6 +295,99 @@ This leads to a desire for the input repositories to reside in a storage format 
 
 }
 
+\section{Data Access}
+
+\begin{draftnote}
+  Brian: I reworded DAX5 into a use case. Please check it. Also DAX8 and DAX9
+\end{draftnote}
+
+\usecase{DAX5}{Efficient caching of dataset cutouts}{%
+
+\item
+Astronomers at a meeting are all analyzing the same part of a shared dataset.
+
+\item
+Hundreds of repeated requests for a subset of the same PVI are sent from these Firefly sessions.
+
+\item
+The DAX server notices the repeated accesses to the same PVI and uses a data access scheme that minimizes reads.
+
+}
+
+\usecase{DAX6}{Retrieve raw data from DAC}{%
+
+\item
+An Astronomer requests a raw data file from the DAC using VO protocols.
+
+\item
+The Server identifies the relevant file and retrieves it from the Data Backbone.
+It also queries the visit metadata table and transformed EFD to retrieve the most up to date and correct values for the visit.
+
+\item
+These values are integrated into the data header and a single file with update metadata is created.
+
+\item
+The file is returned to the Astronomer.
+
+}
+
+\usecase{DAX7}{Caching of data supersets or subsets}{%
+
+\item
+Many users are requesting images, potentially both stitched and postage stamps, from a common region of the sky.
+
+\item
+In order to prevent hits to network disks and provide low latency performance, DAX services will cache images, potentially dynamically adjusting the size of cached data.
+
+\item
+Involved in this is the augmentation of headers of the returned images, which is a standard DAX function.
+The DAX services may need to persist data structures optimized for this type of caching.
+
+}
+
+\usecase{DAX8}{Repository migration and repository versioning}{%
+
+\item
+A Staff Scientist has a data collection that is too old to be read by the current version of the software.
+
+\item
+The software they are using reports the version number and suggests they run the migration script.
+
+\item
+Once the migration script completes the data collection can be read.
+
+\item
+They have another collection that is from the previous version but this one can be read by the current library, although a warning is issued that they may want to migrate to make use of new features.
+
+}
+
+\usecase{DAX9}{Using the Butler with VO retrieved data originating from butler repositories}{%
+
+\item
+An Astronomer downloads images from the LSST DAC using the VO.
+
+\item
+The images end up in a single directory with no structure.
+These images might also include composites as separate files.
+
+\item
+The Astronomer wishes to load these images into their analysis code using the Butler.
+
+}
+
+\section{Data Facility}
+
+
+
+\section{Data Release Processing}
+
+\section{Science Quality and Reliability Engineering}
+
+\section{Science Validation}
+
+
+
+
 \bibliography{local,lsst,lsst-dm,refs,books,refs_ads}
 
 \end{document}
