@@ -377,7 +377,189 @@ The Astronomer wishes to load these images into their analysis code using the Bu
 
 \section{Data Facility}
 
+The bulk of these use cases were sourced from the LSST Data Facility team.
+Use cases numbered 101 and above were sourced from IN2P3.
 
+\usecase{LDF1}{Submit a processing run to the batch processing service}{%
+
+\item
+A Production Operator wants to generate coadds for a tract of sky for all good data for a particular filter.
+They decide on the version of the software to use, the configuration parameters and the specific SuperTasks to execute.
+The input files that are required for the job to compute must be determined (e.g., using a normal sql query or they query the SuperTasks with the parameters)
+
+(alternate)
+During pre-flight, expected output filenames (and paths within compute job) must be determined (e.g., using operator configuration or querying the SuperTasks with the parameters)
+
+(error)
+One of the files reported as being an expected output file has a name that is already known to the data backbone.
+Files in the data backbone should be unique so an exception is raised and the operator must check the configuration that was used by the supertask.
+
+\item
+The relevant files may be pre-staged to a filesystem closer to the compute site and the job is submitted to the batch system.
+The batch system job transfers those files to the processing node and starts the SuperTask, configuring it with the output from the intial query of the SuperTask.
+
+(error)
+The SuperTask attempts to read a file that was not included in the initial list created during pre-flight.
+The SuperTask can only see the local disk and can not retrieve any files from the data backbone during processing.
+This is a fatal error and the processing job terminates.
+
+(error)
+The SuperTask should not be allowed to overwrite an existing output file when running inside the batch processing service.
+This should have been caught as an error during pre-flight, so if it happens during runtime it is an unexpected error.
+
+\item
+When the job completes, the job's file system the expected output files that have been configured to be saved are either stored in a staging area closer to the compute site and then to the data backbone or directly back to the data backbone.
+At operator's request unexpected output files may be saved as a junk tarball which is also brough back to the data backbone in the same manner.
+
+\item
+If an expected file is not found, the job reports an error condition and whatever output files will be brought back to the data backbone (same manner as success).
+
+\item
+Metadata about the files is stored along with the actual files in the data backbone.
+
+}
+
+\usecase{LDF2}{Calibration Selection}{%
+
+\item
+A Validation Scientist wants to reprocess some raw data using a variety of calibration files.
+A configuration file is edited to specify override values for the flatfield files to use for each raw data file.
+The relevant SuperTask is then given this configuration file and list of input files and returns a complete list of files required for processing.
+Processing continues as for OPS1.
+
+\item
+The results from these jobs are consolidated onto a single QA report.
+
+}
+
+\usecase{LDF3}{Investigations}{%
+
+\item
+During a batch production it is noticed that some outputs look wrong.
+A Validation Scientist wants to investigate further.
+A job execution database is queried to retrieve the job provenance information.
+The relevant input files, software and configuration files are then downloaded to a local system.
+The reduction process is configured to persist intermediate files to allow detailed examination of all steps.
+
+\item
+The software is then executed locally, with all the input files in a human-managed directory structure (more than likely single directory), and the outputs are written locally.
+
+\item
+Each intermediate is then displayed in turn by the scientist until the particular step is located that generates the bad outputs.
+
+\item
+The software is then reconfigured to just run the step generating the bad output.
+The reduction process is run multiple times using the output from the last good step with many different configurations and software versions.
+When the problem is diagnosed, a report is written that may also include either a fix being committed or a bug report filed.
+
+\item
+When done with the tests, the Validation Scientist may want to clean up all the test output files.
+
+}
+
+\usecase{LDF4}{Qserv ingest}{%
+
+\item
+As data arrives from batch processing, the resultant catalog files are periodically located for a particular region of the sky and are bulk uploaded into a Qserv instance.
+
+}
+
+\usecase{LDF5}{Alert Processing}{%
+
+\item
+The \emph{next visit} signal comes from the OCS telling the prompt processing to retrieve the templates and catalog files that will be needed to handle the next visit alert processing.
+
+\item
+Crosstalk-corrected data are transferred from the summit to the prompt processing system running at NCSA.
+The data for each CCD is transferred to a specific node along with the templates and catalog files and the job is triggered.
+
+\item
+The processed visit images are written to disk and the alerts are issued.
+The PVIs are transferred to the 30 day cache and forwarded on to EPO.
+
+\item
+The output catalogs are then stored into the L1 database.
+
+}
+
+\usecase{LDF6}{Processing data from that night at the base}{%
+
+\item
+As data are being taken at the summit site, the Commissioning Scientist wishes to do bespoke analyses as quickly as possible.
+They have some Jupyter notebooks running in an instance of the LSP at the Base Facility.
+They make some minor modifications to the notebook and run it on a set of visits taken within the previous half hour.
+
+\item
+Based on the results of this analysis they discover an anomaly and decide to plot the calculated seeing quality from their reduction against some environmental parameters read from the EFD.
+
+\item
+The next morning they want to do a more extensive analysis of the night's data, they log into the LSP at the archive center and runs the same notebook submitting batch jobs for much of the data from the night before.
+They do not edit his notebook to indicate that the EFD data or raw data maybe coming from a different location.
+
+}
+
+\usecase{LDF7{Dataset deletion}{%
+
+\item
+A developer has a local repository from which they want to permanently delete a dataset.
+They run a program which deletes the file(s) from disk and updates the local repository such that the file is no longer discovered.
+
+}
+
+\usecase{LDF101}{Reprocessing a sky patch with bad observations removed}{%
+
+\item
+A Staff Scientist has examined a coadd from a mini-DRP run and has determined that one of the observations is bad in some way and should not be included in future processing jobs.
+
+\item
+The Scientist re-reduces the coadd in the development area to ensure that the coadd looks good without the bad observation.
+The inputs to the processing run are determined automatically based on the tract specification with the bad observation explicitly flagged to not be included.
+
+\item
+The coadd looks much better without the observation. This information is flagged as suspect, including supporting information, using a standard tool and is examined by the Data Release Board.
+The board agree with the assessment and set the appropriate status in the public system indicating that this observation should no longer be included in coadds.
+This information is known to all processing centres and can be queried by anyone with data rights since this may affect how people treat previously issued L1 data products.
+
+\item
+When the bad observation is flagged, the same flagging process can be told to also flag/change data status all data products that have contributions from that observation.
+
+\item
+A Production Operator scans the list of contaminated products and triggers jobs to reprocess them using the updated list of inputs.
+Bad observations are automatically dropped from the list of inputs.
+
+}
+
+\usecase{LDF102}{Retrieve all data for a coadd patch}{%
+
+\item
+An Astronomer wants to reprocess a coadd from a Data Release with all available data.
+They first ensure they can reproduce the coadd from the data release by querying the DAC for all the data files that were used in the original data release.
+They then override the bad observation filtering and retrieve all the raw data that could go into the coadd.
+
+}
+
+\usecase{LDF103}{Download a subset of data}{%
+
+\item
+An Astronomer running in a Jupyter notebook in the LSP wants to reprocess a significant amount of data.
+They have done a query from their notebook to determine all the relevant files and wish to download those files to their home institution.
+
+\item
+They submit a batch job to store those files in their LSP workspace and when they are notified the files are available they mount the workspace on their local system and retrieve them.
+
+}
+
+\usecase{LDF104}{Same processing at different sites}{%
+
+\item
+In order to test that Data Release Production systems are running properly, a Production Operator at NCSA triggers identical processing jobs at multiple sites (e.g., NCSA, France).
+
+\item
+When all the jobs are completed the output products from all jobs are in the data backbone.
+A QA job performs a statistical analysis on both sets of output products to determine whether they are scientifically equivalent (within some threshhold).
+(The output products may either be pre-downloaded from the data backbone or where appropriate can be downloaded from inside the QA job.)
+
+}
 
 \section{Data Release Processing}
 
