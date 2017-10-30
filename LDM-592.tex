@@ -75,6 +75,132 @@ The use cases make use of a standard set of Actors.
 
 \section{Alert Production}
 
+\usecase{AP1}{Prompt processing: process raw images and generate alerts}{%
+
+\item
+DMCS provides a "next visit" signal to the prompt processing system running at NCSA.
+
+\item
+The prompt processing system launches the alert production SuperTask (one instance per CCD) passing it the CCD ID, as well as the VisitInfo.
+
+\item
+The alert production SuperTask computes the desired criteria for calibration products, position and photometric reference catalogs, and image templates and loads them via the Butler.
+It then places a load request for the first of the two crosstalk-corrected snap images, and blocks waiting for it to arrive.
+After the first snap arrives, the task may perform some image processing (e.g. ISR) on that before requesting the second image and blocking again.
+To get adequate performance this may require the ability to for SuperTasks to cooperatively run in parallel, e.g. so one can wait for the second snap while another processes the first snap.
+
+\item
+The alert generation task (one instance per node) processes the second crosstalk-corrected snap image and combines the two snaps into one exposure.
+Steps include:
+\begin{itemize}
+\item Perform instrument signature removal on the second snap.
+\item Detect cosmic rays by comparing the two snaps,
+\item Combine the two snaps into a single exposure.
+\item Peform single-frame calibration: determine a PSF, mask additional cosmic rays, if any, refine the WCS based on the position reference catalog and determine a photometric zero point based on the photometric reference catalog.
+\item Save the calibrated exposure and detected source catalog
+\item Subtract the calibrated image from the template to produce a difference image.
+\item Save the difference image
+\item Detect DIA Sources on the difference image
+\item Save the DIA Source catalog"
+\end{itemize}
+
+\item
+The alert production SuperTask gets DIA Objects from the L1 database via the Butler, performing a spatial query and blocking on the result.
+If this step is slow, it have to be done as a parallel SuperTask that is started while image is being done and runs in the background. However, it done as late as possible in order to give time for the DIA Objects from the previous field to be inserted into the L1 database (though this only matters when two consecutive fields overlap).
+
+\item
+The alert production SuperTask associates DIA Objects with DIA Sources
+
+\item
+The alert production SuperTask writes new DIA Sources and new or modified DIA Objects (one per DIA Source) to the L1 database.
+Note that the modified DIA Objects will be saved as new DIA Objects.
+
+\item
+The alert generation task issues an alert for each new or modified DIA Object.
+This will be done via the Butler talking to the alert broker, unless a more direct path is needed for performance.
+
+}
+
+\usecase{AP1.catchup}{Catch up processing: process images during the day and do not issue alerts}{%
+
+\item
+This is a minor variant of AP1. Some raw images may have to be processed during the day (all will be processed that way.
+when the telescope first goes on sky, later this may be needed if normal prompt processing fails during the night)
+
+The primary differences from API are:
+\begin{itemize}
+\item The job is managed differently; I believe it will be triggered manually by an Observer
+\item No alerts will be broadcast.
+\end{itemize}
+
+}
+
+\usecase{AP1.dev}{A Staff Scientist runs the alert generation task}{%
+
+\item
+This is the standard variant of any automated task.
+A user is a Staff Scientist who wants to run all or some of the task, in order to diagnose a problem, try out a new configuration, or try out new code.
+
+\item
+The user obtains the required input data.
+
+\item
+The user obtains the original output against which the new output is to be compared.
+
+\item
+The user launches the appropriate portion of the alert generation task.
+
+\item
+The alert generation task executes as per AP1, reading input data, saving output data to the specified output repository and (if requested) issuing alerts to a test alert broker.
+
+\item
+The user compares the new output to the original output.
+
+}
+
+\usecase{AP2}{A Staff Scientist processes images}{%
+
+\item
+The user, a Staff Scientist, specifies a visit to be processed.
+
+\item
+The butler expands the incomplete data ID by setting the filter and selecting only those CCDs for which raw image data is available.
+
+\item
+The task processes each image.
+
+\item
+The task persists the computed data (calexp, etc.)
+
+Note: this use case is intended to highlight the need for the butler to be able to expand an incomplete data ID.
+This expansion only relies on the Butler knowing which datasets exist that match a particular incomplete ID.
+It has nothing to do with searching for data that meets criteria such as PSF size (presumably a different use case).
+
+}
+
+\usecase{AP3}{A Staff Developer adds a new SuperTask}{%
+
+\item
+The user, a Staff Developer, writes the new SuperTask and provides a suitable new unique name for task configuration and metadata persistence
+
+\item
+Because the new butler supports dataset prototypes the developer does NOT have to edit any obs package to add dataset types for this task's configuration and metadata.
+Instead the new task uses the standard dataset prototypes for configuration and metadata to persist data.
+
+Note: dataset prototypes also simplify repository configuration and provide flexibility to tasks to save new dataset types (e.g.\ a one-off QA task could write a new kind of graph without modifying any obs packages).
+
+}
+
+\usecase{AP4}{Persistence from alert generation pipelines}{%
+
+\item
+A pipelines developer is writing the task that packages up DIAObjects into alerts.
+
+\item
+They want to publish the alerts to the alert distribution system, but they also want to preserve the difference images and DIASource measurements resulting from those difference images.
+
+}
+
 \section{Architecture}
 
 \usecase{ARCH1}{HDF5 Data Products}{%
