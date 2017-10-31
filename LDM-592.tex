@@ -703,127 +703,187 @@ This is a lower-level use case describing an activity that is a part of (at leas
 \usecase{DRP2}{SuperTask Input}{%
 
 \item
+A SuperTask retrieves a Python object from a stored dataset, given a handle object provided in pre-flight.
 
+\item
+Like DRP2a, but the dataset is predefined small part of a larger dataset (such as the PSF of a calibrated exposure).
+This could be supported by having the larger dataset stored as multiple smaller files.
+
+\item
+Like DRP2a, but the dataset is composed of multiple files, and some files may contain components that should override those in other files.
+
+\item
+Like DRP2c, but the dataset also contains the results of a query to the EFD (or some alternate representation).  This is required for calibration products production.
+
+\item
+Like DRP2a, but the dataset is a flexibly-defined subset of a larger dataset (such as a rectangular subset of an image, or a set of rows in a catalog) that can nevertheless be read more efficiently than the full dataset.
+This can probably not be supported by splitting the dataset into multiple files.
 }
 
 \usecase{DRP3}{SuperTask Output}{%
 
 \item
+A SuperTask sends an in-memory Python object to a data repository to be stored as one or more complete files.
 
+This is a lower-level use case describing an activity that is a part of (at least) SCIVAL1 and SCIVAL2.
 }
 
 \usecase{DRP4}{SuperTask Intermediate Elision}{%
 
 \item
+Like DRP3 followed by DRP2abc, but actual storage is elided for performance for certain datasets that were identified when the Pipeline and/or workflow system was configured.
 
+This is a lower-level use case describing an activity that is a part of (at least) SCIVAL1 and SCIVAL2.
 }
 
 \usecase{DRP5}{SuperTask Input Staging}{%
 
 \item
+After pre-flight but before at least some SuperTask execution, the Batch Control System transfers all inputs needed by one or more SuperTask executions to the compute resources where the execution will take place.
 
+This is a lower-level use case describing an activity that is a part of SCIVAL2 and (possibly, depending on architecture) SCIVAL1.
 }
 
 \usecase{DRP6}{SuperTask Output Staging}{%
 
 \item
+After at least some SuperTask execution, the Batch Control System transfers output datasets from temporary storage on the compute resources where they were produced to (more) permanent storage.
+
+This is a lower-level use case describing an activity that is a part of SCIVAL2 and (possibly, depending on architecture) SCIVAL1.
 
 }
 
 \usecase{DRP7}{Analysis Metadata Query}{%
 
 \item
+A Staff Scientist or Astronomer obtains a list of data IDs and existing datasets that match an expression within a given output data repository.
+This includes identifying the appropriate calibration dataset to use with a given raw dataset, and identifying raw data and sky patches from each other based on location.
 
+This is a lower-level use case describing an activity that is a part of SCIVAL3 and SCIVAL4.
 }
 
 \usecase{DRP8}{Analysis Dataset Input}{%
 
 \item
+A Staff Scientist or Astronomer obtains an in-memory Python object from a data repository, providing either a data ID or an expression that reduces to a unique data ID.
 
+This is a lower-level use case describing an activity that is a part of SCIVAL3 and SCIVAL4."
+
+\item
+Like DRP8a, but the dataset is predefined small part of a larger dataset (such as the PSF of a calibrated exposure).
+This could be supported by having the larger dataset stored as multiple smaller files.
+
+\item
+Like DRP8a, but the dataset is composed of multiple files, and some files may contain components that should override those in other files.
+
+\item
+Like DRP8c, but the dataset also contains the results of a query to the EFD (or some alternate representation).
+May be avoidable if all relevant queries can be anticipated and run during raw data ingest.
+
+\item
+Like DRP8a, but the dataset is a flexibly-defined subset of a larger dataset (such as a rectangular subset of an image, or a set of rows in a catalog) that can nevertheless be read more efficiently than the full dataset.
+This can probably not be supported by splitting the dataset into multiple files.
 }
 
 \usecase{DRP10}{LSST Raw Data Ingest}{%
 
 \item
-
+Raw data from LSST is ingested into a custom data repository (i.e. not the Data Backbone).
 }
 
 \usecase{DRP11}{External Data Ingest}{%
 
 \item
+A Staff Scientist or Astronomer adds non-LSST images or catalogs to a data repository, which may include raw images or processed images and catalogs.
+This information should then be served in a consistent fashion (e.g. get data for same region on the sky for joint processing with Euclid and WFIRST).
+When the new data are raw images from an instrument for which an LSST \texttt{obs} package has been defined, all SCIVAL use cases must be supported on these data.
 
+This is required for at least some precursor datasets (HSC, DECam, CFHT) for verification and validation prior to first light.
 }
 
 \usecase{DRP12}{Dataset Type Registration}{%
 
 \item
+SuperTask control code registers a new dataset type with a data repository, allowing instances of that dataset type to be added to the repository in the future.
 
+This is a low-level use case describing an activity that is a part of SCIVAL1d.
 }
 
 \usecase{DRP13}{Skymap Registration}{%
 
 \item
+A Staff Scientist adds a new tiling of the sky defined by a configuration file to an output data repository, allowing the tracts and patches it defines to be used to identify datasets.
 
+This is a low-level use case describing an activity that is a part of SCIVAL1c.
 }
 
 \usecase{DRP14}{Processing-Output Metadata Update / Ingest}{%
 
 \item
+SuperTask preflight code (as in DRP1) filters images and relates them to sky patches using metadata (such as PSF size and WCS) generated by processing steps that have not been run in the given data repository.
+While the subsequent processing will start from raw data and will naturally redetermine (and possibly improve upon) those metadata values, estimates of these values from nightly alert processing are both necessary and sufficient for creating an efficient plan for staging data and executing Pipelines that extend to coaddition.
 
+When values from nightly processing are not available (e.g. in construction, or when testing a new deployment of the operations system), a Staff Scientist sets (or resets) the metadata values from an initial manually-invoked processing run that does not extend to coaddition.
 }
 
 \usecase{DRP15}{Master Calibration Products Registration}{%
 
 \item
-
+A Staff Scientist produces a set of master calibration products via a set of processing runs runs (possibly in a different environment) and adds them to a data repository for use in other processing runs.
+Old master calibration products should remain available, but one or more "preferred" labels may need to be transferred to the new products.
+When the data repository is part of the operations system, this is done by a Batch Production Operator, not arbitrary Staff Scientists.
 }
 
 \usecase{DRP16}{Pre-cache data}{%
 
 \item
-
+A Staff Scientist or Astronomer is going to a conference and wants to pre-cache some data, from a remote repository, to be able to access through the butler while without network connectivity.
 }
 
 \usecase{DRP17}{Shared cache}{%
 
 \item
-
+A Staff Scientist or Astronomer and her colleagues want to access the same data (or overlapping) from a remote repository. It would be efficient if this can be cached in an on-site proxy.
 }
 
 \usecase{DRP18}{Load size}{%
 
 \item
-
+A Staff Scientist or Astronomer (or the task she is running) wants to be able to access a dataset that is too large to fit in memory as a whole.
 }
 
 \usecase{DRP22}{Transactions}{%
 
 \item
-
+A SuperTask or the Batch Control System needs to write a dataset to a repository which is backed by multiple media (e.g., part goes to file, part to a database).
+This needs to happen atomically in a single blocking ACID transaction.
+Either all of the data is written, or none of it is (and an exception is thrown).
+i.e., it should offer the strong exception guarantee.
 }
 
 \usecase{DRP23}{User interactions}{%
 
 \item
-
+An Astronomer wants to build a query interactively (e.g., using tab-complete or some other predictive help that knows about the dataflow).
 }
 
 \usecase{DRP26}{Compression}{%
 
 \item
-
+When running a Pipeline in a certain environment, a developer or operator wants to configure a particular output dataset to be written with compression.
+This may be implemented by adding a new dataset type and (trivial) SuperTask to write the compressed version (as long as some sort of alias feature allows consuming code to read either the compressed or uncompressed version), or by changing Butler configuration.
 }
 
 \usecase{DRP27}{Iterating over Repository content}{%
 
 \item
-
+An Astronomer wants to loop over all Datasets of a particular DatasetType in a repository (e.g. to run jointcal and then make plots for all output).
 }
 
 \usecase{DRP28}{Backwards compatibility}{%
 
 \item
-
+A Staff Scientist or Astronomer has existing code (written to use \texttt{butler.get()} and \texttt{butler.put()} calls) that he or she wishes to use with no (or minimal) changes.
 }
 
 \usecase{DRP29}{Multi-Repository File Removal}{%
@@ -997,7 +1057,100 @@ This could include even getting data in deep storage on tape.
 \section{Science Validation}
 
 
+\usecase{SCIVAL1}{Developer-initiated processing}{%
 
+\item
+A Staff Scientist wants to test an alternate configuration for an algorithm that is part of DRP.
+The first step involves submitting a workflow defined by a single a Pipeline consisting of multiple SuperTasks on a small patch of sky, with the work expected to consume up to a few hundred core-hours of compute effort but only a couple of hours of wall-clock time, producing a few tens of terabytes of output data products.
+Ideally the batch submission could be performed from the notebook environment described in Direct Ad-Hoc Analysis, but this is not critical.
+
+The inputs to the processing could be:
+\begin{itemize}
+\item raw data
+\item an official data release
+\item a large-scale processing run initiated and managed by an operator (as per Operator-Initiated Processing)
+\item another small-scale processing run initiated by the same developer (as per SCIVAL1a)
+\item another small-scale processing run initiated by a different developer (as per SCIVAL1a)
+\item a processing run executed automatically on a predefined cadence by the CI System (as per CI1)
+\end{itemize}
+
+The output data products are typically needed for only a few weeks, but should only be deleted by the developer or with the developer's permission.  Some mechanism (possibly policy-only) should ensure that data products are not deleted if they are still in use by another developer.
+
+\item
+Like SCIVAL1a, but instead of testing a configuration change, the developer wishes to test a code change, which could be an of the following scenarios:
+
+\begin{enumerate}
+\item The new code has already been included in a managed software release.
+\item The new code has been merged to master for a few days, and hence is guaranteed to have been built by the CI system, but has not been included in a managed software release.
+\item The new code has been committed to a branch, but has not yet been merged to master.
+\end{enumerate}
+
+\item
+Like SCIVAL1a, but instead of testing a configuration change, the developer wishes to test a new set of calibration products.
+\begin{enumerate}
+\item The new calibration products have already been made available to the operations production system.
+\item The new calibration products are experimental and have not been made available to the operations production sysetem.
+\end{enumerate}
+
+\item
+Like SCIVAL1a, but the Staff Scientist wants to test a totally new algorithm that produces new data product types.
+\begin{enumerate}
+\item The new data products are defined along an existing combination of units of data (e.g., tract+patch+filter, which is already used by many coadd data products).
+\item The new data products are defined along a new combination of existing units of data (e.g., sensor+filter, which are used individually to define other data products but have not appeared before without visit before now).
+\end{enumerate}
+
+}
+
+\usecase{SCIVAL2}{Operator-initiated processing}{%
+
+\item
+Like SCIVAL1a, but involving a much larger processing run that will consume up to thousands of core weeks and tens of petabytes of storage.
+The Staff Scientist requesting the run starts by obtaining permission for a large run and defining the storage duration of the outputs according to some TBD policy.
+A Batch Production Operator then initiates and manage the new processing run, depending on the actual size of the job and the need for human intervention in executing it.
+In general, this could involve multiple Pipelines and many batch submissions.
+
+If the change being tested is a code change (like SCIVAL1b), it can be assumed that the new code has been included in a managed software release, and if it is a new set of calibration products (like SCIVAL1c) the calibration products can be assumed to be made available to the operations production system.
+New data product types (like SCIVAL1d) to support a single processing run need not be supported, as long is there is a separate mechanism for adding new data product types to the production system as e.g., part of a managed software release.
+
+}
+
+\usecase{SCIVAL3}{Direct Ad-Hoc Analysis}{%
+
+\item
+Following one or more processing runs, a Staff Scientist or Astronomer uses a notebook environment to analyze the results, running a combination of predefined and ad-hoc computation, plotting, and display code.
+The input data may come from any combination of:
+\begin{itemize}
+\item official data releases
+\item small-scale processing runs (as per SCIVAL1a, only for Staff Scientists, not general Astronomers)
+\item large-scaling processing runs (as per SCIVAL2, only for Staff Scientists, not general Astronomers)
+\item processing runs executed automatically on a predefined cadence by the CI System (as per CI1, only for Staff Scientists, not general Astronomers)
+\item local data repositories in the notebook environment's filesystem or some other per-user space.
+\end{itemize}
+Any combination of these may be compared in a single analysis session.
+
+The data products analyzed will frequently include catalog data stored in a database.  In other cases, the processing run may not have included database ingest originally, but the developer performing the analysis wants to use database-like query functionality, requiring either a way to easily perform ingest at this stage or otherwise aggregate the data and support SQL-like query operations.
+
+The analysis environment should include an interactive Python prompt in which loaded data products can be introspected, image and optionally tabular data displays can be manipulated, and plots can be created and modified.  High-level APIs that link points in scatter plots, overplotted symbols in the image display, and records in the tabular data and interactive Python, allowing them to be selected, highlighted, and filtered jointly in all contexts should be included.  These may be utilized both by library code (for predefined metrics and plots) and interactive Python users.
+
+Plots, tabular data, and overplotted images may also be saved or loaded in the same manner as more direct pipeline outputs, allowing code written using the same APIs to be run in a non-interactive context.
+
+}
+
+\usecase{SCIVAL4}{Multi-scale Spatial Analysis}{%
+
+\item
+Like SCIVAL3, but the Staff Scientist wishes to inspect values of a set of metrics on multiple spatial scales in an image-like display, reflecting different binning in aggregate calculations.
+To enable efficient inspection of large areas of sky, the metrics to be inspected may need to be precomputed on the coarser grids of interest before interactive analysis begins.
+
+As with SCIVAL3, the inputs to this processing will usually be catalog values stored in a database, but they may be catalog values that have not yet been ingested into a database.
+The metric values will often be compared to (binned) image data on the same spatial scales, which may also require some preprocessing of image data.
+
+In addition to the gridded metric values themselves, the outputs may involve intermediate data products that can be used for more in-depth analysis.
+For example, the summary metric may be the width of a color-color scatter diagram in a certain direction, and the intermediate data product might be the filtered set of data points used to construct the color-color scatter diagram.
+
+After the necessary preprocessing, the Staff Scientist utilizes the same display tools as in SCIVAL3, but with the image display able to zoom out to much larger areas using binned (and stitched) images and overlays of the binned metric values included.
+
+}
 
 \bibliography{local,lsst,lsst-dm,refs,books,refs_ads}
 
