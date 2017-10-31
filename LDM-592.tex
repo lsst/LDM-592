@@ -691,6 +691,164 @@ A QA job performs a statistical analysis on both sets of output products to dete
 
 \section{Science Quality and Reliability Engineering}
 
+\usecase{SQR1}{QA Drilldown}{%
+
+\item
+A Science Validation Collaborator wants to use the Notebooks Aspect of the Science Platform to do some analysis on data that has been processed using the LSST pipelines.
+They know how to find a difference image that did not turn out well, but do not know if it was the template or science image that caused the problem.
+They want an easy way to iterate over just the data relevant to the difference image for every dataset type that went into the particular run to try to figure out what data were the problem.
+
+Identify data related to a particular difference image: coadd, warps, calexps, direct image, etc.
+
+\item
+Retrieve identified data into local filesystem.
+
+\item
+Rebuild intermediates
+
+\item
+Iterate through inputs, display them, and look for bad data.
+
+}
+
+\usecase{SQR1.5}{Improve configs}{%
+
+\item
+The QA Collaborator finds the particular calibrated exposure that went into the coadd to mess it up.
+They then want to rerun the relevant steps that resulted in the erroneous calibrated exposure to see if they can find a configuration that would create a better calibrated exposure: repeatedly run on the local data with various configs.
+
+\item
+Examine outputs for each configuration
+
+\item
+Push corrected configuration into the production config.
+
+}
+
+\usecase{SQR2}{Data discovery based on observation/processing metadata}{%
+
+\item
+A QA Scientist wants to find all the catalogs and exposures taken in really good seeing and those in moderate seeing in order to compare the ability to estimate the point spread function as it tends toward the undersampled regime.
+
+Discover data based on e.g. seeing cuts.
+This includes image data as well as catalogs produced during processing.
+
+\item
+Stage discovered data to a data store where they can be examined further.
+
+}
+
+\usecase{SQR4}{Job/Metric/Measurement persistence}{%
+
+\item
+A developer is helping a pipelines developer instrument an image characterization Task to measure a specific set of metrics and publish them to SQuaSH.
+The verify system comprises a Job object which contains many Measurments of different Metrics.
+The developers want to be able to persist the specific Job for this Task by name so that it can later be retrieved by name.
+
+}
+
+\usecase{SQR5}{Named queries as datasets}{%
+
+\item
+A QA scientist would like to include a test on a specific dataset.
+The test includes finding all point like sources at a certain signal to noise with a bright and faint flux cut.
+The scientist produces a query that will retrieve these sources for the dataset in question, and they would like to refer to the query by name as opposed re-writing the query every time.
+They would also like to be able to refer to the same query by the same name in other contexts: i.e., on different, but similar datasets.
+
+}
+
+\usecase{SQR6}{Named blobs as datasets}{%
+
+\item
+The QA scientist is producing a new measurement they would like to track in SQuaSH.
+An intermediate product of calculating the measurement is a plot of magnitude residual vs.\ magnitude with some bounds.
+They would like to persist this so that it is easily retrieveable as a blob later on.
+
+}
+
+\usecase{SQR7}{Multiple repositories}{%
+
+\item
+A commissioning scientist would like to compare results from reducing the same datasets using two different configurations of the algorithms.
+They would like to easily access the same data (e.g., calibrated exposures, source catalogs) from within a python interpreter so that they can do comparisons of how the change in configuration affects the output.
+
+}
+
+\usecase{SQR9}{DRP Canary Data}{%
+
+\item
+\emph{Context agnostic mechanism to refer to multiple data releases in the same session.}
+
+QA scientists will identify data to use as a "canary" test between releases. They want the size of the data will be manageable, but will provide enough scope to uncover major problems.
+The CI System will need to access the same data products from multiple data releases in the same environment for comparison.
+
+This also implies that the CI system needs some way to refer to releases (and other coherent repositories) by name rather than by path since the location of the repositories is not the same for all contexts.
+
+\item
+Possibly a duplicate of SQR1a -- retrieve a coherent set of data given a fully qualified descriptor for a particular data product(s)
+
+}
+
+\usecase{SQR10}{Efficient notebook execution}{%
+
+\item
+Given a notebook, identify necessary inputs and outputs.
+
+\item
+Inspect the existing data products to find products that need to be generated.
+
+\item
+Transparently execute only the code in cells necessary to produce the missing data products.
+
+A common use case for astronomers interacting with the LSST Science Platform for exploration will be to do compute and visualization in the same notebook.
+In fact, it's not uncommon to do multiple types of compute: e.g., rerun processing, aggregate statistics in the same notebook.
+Being efficient in notebooks by not redoing compute is both a useability and a costing consideration.
+First, it's not always clear which cells in a notebook are necessary for a particular cell later in the notebook.
+It's also difficult to tell which cells are expensive just by looking.
+A common user reaction to this is to simply rerun all cells when they want to update a cell further down the notebook.
+Second, the Science Platform resource budget is very tight.
+Being a factor of two inefficient is a huge hit to the impact that can be made with the Science Platform.
+
+}
+
+\usecase{SQR12}{Example Datasets}{%
+
+\item
+A QA scientist wishes to distribute test datasets with an example in documentations.
+They would like users to be able to run the example either in the LSP or on their personal compute.
+
+\item
+The results of the example would be written to a local repository using the Butler.
+
+}
+
+\usecase{SQR14}{Share datasets via VOSpace}{%
+
+\item
+An astronomer working with the LSP would like to share an interesting subset discovered in the LSP environment.
+The astronomer has access to a VOSpace area shared with other astronomers.
+For efficiency they would like to provide a script that only pulls from the VOSpace when a \texttt{get()} is called, but would like the script to have the same interfaces in both the LSP and when dealing with a VOSpace repository.
+
+}
+
+\usecase{SQR15}{Minimize storage in notebooks}{%
+
+\item
+The commissioning scientist wants to look at parts of several different tracts of coadds.
+Pulling over a whole tract is obviously inefficient, but even just pulling the four patches that make up any given subsection of a coadd is inefficient.
+They would like to stream just the subsection of the tract specifically needed.
+
+}
+
+\usecase{SQR16}{Notebooks run on archived data}{%
+
+\item
+A commissioning scientist wants to do some historical analysis.
+They would like to use the LSP to start their analysis.
+This could include even getting data in deep storage on tape.
+
+}
+
 \section{Science Validation}
 
 
