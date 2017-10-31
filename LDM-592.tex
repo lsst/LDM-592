@@ -689,6 +689,151 @@ A QA job performs a statistical analysis on both sets of output products to dete
 
 \section{Data Release Processing}
 
+\usecase{DRP1}{SuperTask Pre-flight}{%
+
+\item
+SuperTask activator code obtains a graph representation of the datasets and units of data that a Pipeline may use as inputs and/or outputs.
+Must account for the availability of inputs in the data repository, the relationships between units of data, and user-provided filters on units of data to consider.
+This includes identifying the appropriate calibration dataset to use with a given raw dataset, and identifying raw data and sky patches from each other based on location.
+
+This is a lower-level use case describing an activity that is a part of (at least) SCIVAL1 and SCIVAL2.
+
+}
+
+\usecase{DRP2}{SuperTask Input}{%
+
+\item
+
+}
+
+\usecase{DRP3}{SuperTask Output}{%
+
+\item
+
+}
+
+\usecase{DRP4}{SuperTask Intermediate Elision}{%
+
+\item
+
+}
+
+\usecase{DRP5}{SuperTask Input Staging}{%
+
+\item
+
+}
+
+\usecase{DRP6}{SuperTask Output Staging}{%
+
+\item
+
+}
+
+\usecase{DRP7}{Analysis Metadata Query}{%
+
+\item
+
+}
+
+\usecase{DRP8}{Analysis Dataset Input}{%
+
+\item
+
+}
+
+\usecase{DRP10}{LSST Raw Data Ingest}{%
+
+\item
+
+}
+
+\usecase{DRP11}{External Data Ingest}{%
+
+\item
+
+}
+
+\usecase{DRP12}{Dataset Type Registration}{%
+
+\item
+
+}
+
+\usecase{DRP13}{Skymap Registration}{%
+
+\item
+
+}
+
+\usecase{DRP14}{Processing-Output Metadata Update / Ingest}{%
+
+\item
+
+}
+
+\usecase{DRP15}{Master Calibration Products Registration}{%
+
+\item
+
+}
+
+\usecase{DRP16}{Pre-cache data}{%
+
+\item
+
+}
+
+\usecase{DRP17}{Shared cache}{%
+
+\item
+
+}
+
+\usecase{DRP18}{Load size}{%
+
+\item
+
+}
+
+\usecase{DRP22}{Transactions}{%
+
+\item
+
+}
+
+\usecase{DRP23}{User interactions}{%
+
+\item
+
+}
+
+\usecase{DRP26}{Compression}{%
+
+\item
+
+}
+
+\usecase{DRP27}{Iterating over Repository content}{%
+
+\item
+
+}
+
+\usecase{DRP28}{Backwards compatibility}{%
+
+\item
+
+}
+
+\usecase{DRP29}{Multi-Repository File Removal}{%
+
+\item
+A shared storage space used for collaborative algorithm development and testing is filling up, and developers respond by removing processing outputs that are not being used anymore.
+Some of the processing runs to be deleted were based on inputs produced in other processing runs that should not be deleted, and those inputs are hence considered to be part of both the to-be-deleted data repositories and the to-be-kept data repositories.
+After removing the to-be-deleted data repositories, the files that are no longer used by any repository are identified and deleted, while those in the to-be-kept repositories are not.
+}
+
 \section{Science Quality and Reliability Engineering}
 
 \usecase{SQR1}{QA Drilldown}{%
