@@ -1,7 +1,7 @@
 \documentclass[DM,toc,lsstdraft]{lsstdoc}
 
 \setDocChangeRecord{%
-\addtohist{1.0}{2017-??-??}{Initial version.} {T.~Jenness}
+\addtohist{1.0}{2017-10-31}{Initial version from Working Group internal spreadsheet.} {T.~Jenness}
 }
 
 \title{Data Access Use Cases}
@@ -21,11 +21,13 @@ Russell~Owen, Pim~Schellart, Brian~van~Klaveren, Dominique~Boutigny}
 \usepackage{enumitem}
 \newcommand{\usecase}[3]{%
 \subsection{\emph{#1}: #2}
+\label{use:#1}
 \begin{enumerate}[label=\alph*.]
 #3
 \end{enumerate}
 }
 
+\newcommand{\useref}[1]{\hyperref[use:#1]{\textcolor{lsstblue}{\textbf{#1}}}}
 
 \begin{document}
 %
@@ -320,7 +322,6 @@ This could also include tracking the version of the stack used to produce each e
 
 \item
 The commissioning scientists will want to build pipelines that are not exactly AP or DRP pipelines, but that will behave similarly in the sense that they will be runnable in the same batch system.
-This goes to question MQ4.
 
 }
 
@@ -350,7 +351,7 @@ For example, compare the width of the stellar locus from PS1 to the width from L
 \usecase{COMM10}{Notebook portabiliity}{%
 
 \item
-The commissioning scientists would like to run exactly the same notebook on exactly the same data as in COMM4, but this time at the archive center.
+The commissioning scientists would like to run exactly the same notebook on exactly the same data as in \useref{COMM4}, but this time at the archive center.
 
 }
 
@@ -422,6 +423,27 @@ This leads to a desire for the input repositories to reside in a storage format 
 }
 
 \section{Data Access}
+
+\usecase{DAX1}{Pre-caching data}{%
+
+\item
+See \useref{DRP16}
+
+}
+
+\usecase{DAX2}{Shared local cache of remote data}{%
+
+\item
+See \useref{DRP17}
+
+}
+
+\usecase{DAX3}{Load size}{%
+
+\item
+See \useref{DRP18}
+
+}
 
 \begin{draftnote}
   Brian: I reworded DAX5 into a use case. Please check it. Also DAX8 and DAX9
@@ -696,7 +718,7 @@ SuperTask activator code obtains a graph representation of the datasets and unit
 Must account for the availability of inputs in the data repository, the relationships between units of data, and user-provided filters on units of data to consider.
 This includes identifying the appropriate calibration dataset to use with a given raw dataset, and identifying raw data and sky patches from each other based on location.
 
-This is a lower-level use case describing an activity that is a part of (at least) SCIVAL1 and SCIVAL2.
+This is a lower-level use case describing an activity that is a part of (at least) \useref{SCIVAL1} and \useref{SCIVAL2}.
 
 }
 
@@ -706,17 +728,17 @@ This is a lower-level use case describing an activity that is a part of (at leas
 A SuperTask retrieves a Python object from a stored dataset, given a handle object provided in pre-flight.
 
 \item
-Like DRP2a, but the dataset is predefined small part of a larger dataset (such as the PSF of a calibrated exposure).
+Like \useref{DRP2}a, but the dataset is predefined small part of a larger dataset (such as the PSF of a calibrated exposure).
 This could be supported by having the larger dataset stored as multiple smaller files.
 
 \item
-Like DRP2a, but the dataset is composed of multiple files, and some files may contain components that should override those in other files.
+Like \useref{DRP2}a, but the dataset is composed of multiple files, and some files may contain components that should override those in other files.
 
 \item
-Like DRP2c, but the dataset also contains the results of a query to the EFD (or some alternate representation).  This is required for calibration products production.
+Like \useref{DRP2}c, but the dataset also contains the results of a query to the EFD (or some alternate representation).  This is required for calibration products production.
 
 \item
-Like DRP2a, but the dataset is a flexibly-defined subset of a larger dataset (such as a rectangular subset of an image, or a set of rows in a catalog) that can nevertheless be read more efficiently than the full dataset.
+Like \useref{DRP2}a, but the dataset is a flexibly-defined subset of a larger dataset (such as a rectangular subset of an image, or a set of rows in a catalog) that can nevertheless be read more efficiently than the full dataset.
 This can probably not be supported by splitting the dataset into multiple files.
 }
 
@@ -725,15 +747,15 @@ This can probably not be supported by splitting the dataset into multiple files.
 \item
 A SuperTask sends an in-memory Python object to a data repository to be stored as one or more complete files.
 
-This is a lower-level use case describing an activity that is a part of (at least) SCIVAL1 and SCIVAL2.
+This is a lower-level use case describing an activity that is a part of (at least) \useref{SCIVAL1} and \useref{SCIVAL2}.
 }
 
 \usecase{DRP4}{SuperTask Intermediate Elision}{%
 
 \item
-Like DRP3 followed by DRP2abc, but actual storage is elided for performance for certain datasets that were identified when the Pipeline and/or workflow system was configured.
+Like \useref{DRP3} followed by \useref{DRP2}abc, but actual storage is elided for performance for certain datasets that were identified when the Pipeline and/or workflow system was configured.
 
-This is a lower-level use case describing an activity that is a part of (at least) SCIVAL1 and SCIVAL2.
+This is a lower-level use case describing an activity that is a part of (at least) \useref{SCIVAL1} and \useref{SCIVAL2}.
 }
 
 \usecase{DRP5}{SuperTask Input Staging}{%
@@ -741,7 +763,7 @@ This is a lower-level use case describing an activity that is a part of (at leas
 \item
 After pre-flight but before at least some SuperTask execution, the Batch Control System transfers all inputs needed by one or more SuperTask executions to the compute resources where the execution will take place.
 
-This is a lower-level use case describing an activity that is a part of SCIVAL2 and (possibly, depending on architecture) SCIVAL1.
+This is a lower-level use case describing an activity that is a part of \useref{SCIVAL2} and (possibly, depending on architecture) \useref{SCIVAL1}.
 }
 
 \usecase{DRP6}{SuperTask Output Staging}{%
@@ -749,7 +771,7 @@ This is a lower-level use case describing an activity that is a part of SCIVAL2 
 \item
 After at least some SuperTask execution, the Batch Control System transfers output datasets from temporary storage on the compute resources where they were produced to (more) permanent storage.
 
-This is a lower-level use case describing an activity that is a part of SCIVAL2 and (possibly, depending on architecture) SCIVAL1.
+This is a lower-level use case describing an activity that is a part of \useref{SCIVAL2} and (possibly, depending on architecture) \useref{SCIVAL1}.
 
 }
 
@@ -759,7 +781,7 @@ This is a lower-level use case describing an activity that is a part of SCIVAL2 
 A Staff Scientist or Astronomer obtains a list of data IDs and existing datasets that match an expression within a given output data repository.
 This includes identifying the appropriate calibration dataset to use with a given raw dataset, and identifying raw data and sky patches from each other based on location.
 
-This is a lower-level use case describing an activity that is a part of SCIVAL3 and SCIVAL4.
+This is a lower-level use case describing an activity that is a part of \useref{SCIVAL3} and \useref{SCIVAL4}.
 }
 
 \usecase{DRP8}{Analysis Dataset Input}{%
@@ -767,21 +789,21 @@ This is a lower-level use case describing an activity that is a part of SCIVAL3 
 \item
 A Staff Scientist or Astronomer obtains an in-memory Python object from a data repository, providing either a data ID or an expression that reduces to a unique data ID.
 
-This is a lower-level use case describing an activity that is a part of SCIVAL3 and SCIVAL4."
+This is a lower-level use case describing an activity that is a part of \useref{SCIVAL3} and \useref{SCIVAL4}.
 
 \item
-Like DRP8a, but the dataset is predefined small part of a larger dataset (such as the PSF of a calibrated exposure).
+Like \useref{DRP8}a, but the dataset is predefined small part of a larger dataset (such as the PSF of a calibrated exposure).
 This could be supported by having the larger dataset stored as multiple smaller files.
 
 \item
-Like DRP8a, but the dataset is composed of multiple files, and some files may contain components that should override those in other files.
+Like \useref{DRP8}a, but the dataset is composed of multiple files, and some files may contain components that should override those in other files.
 
 \item
-Like DRP8c, but the dataset also contains the results of a query to the EFD (or some alternate representation).
+Like \useref{DRP8}c, but the dataset also contains the results of a query to the EFD (or some alternate representation).
 May be avoidable if all relevant queries can be anticipated and run during raw data ingest.
 
 \item
-Like DRP8a, but the dataset is a flexibly-defined subset of a larger dataset (such as a rectangular subset of an image, or a set of rows in a catalog) that can nevertheless be read more efficiently than the full dataset.
+Like \useref{DRP8}a, but the dataset is a flexibly-defined subset of a larger dataset (such as a rectangular subset of an image, or a set of rows in a catalog) that can nevertheless be read more efficiently than the full dataset.
 This can probably not be supported by splitting the dataset into multiple files.
 }
 
@@ -806,7 +828,7 @@ This is required for at least some precursor datasets (HSC, DECam, CFHT) for ver
 \item
 SuperTask control code registers a new dataset type with a data repository, allowing instances of that dataset type to be added to the repository in the future.
 
-This is a low-level use case describing an activity that is a part of SCIVAL1d.
+This is a low-level use case describing an activity that is a part of \useref{SCIVAL1}d.
 }
 
 \usecase{DRP13}{Skymap Registration}{%
@@ -814,13 +836,13 @@ This is a low-level use case describing an activity that is a part of SCIVAL1d.
 \item
 A Staff Scientist adds a new tiling of the sky defined by a configuration file to an output data repository, allowing the tracts and patches it defines to be used to identify datasets.
 
-This is a low-level use case describing an activity that is a part of SCIVAL1c.
+This is a low-level use case describing an activity that is a part of \useref{SCIVAL1}c.
 }
 
 \usecase{DRP14}{Processing-Output Metadata Update / Ingest}{%
 
 \item
-SuperTask preflight code (as in DRP1) filters images and relates them to sky patches using metadata (such as PSF size and WCS) generated by processing steps that have not been run in the given data repository.
+SuperTask preflight code (as in \useref{DRP1}) filters images and relates them to sky patches using metadata (such as PSF size and WCS) generated by processing steps that have not been run in the given data repository.
 While the subsequent processing will start from raw data and will naturally redetermine (and possibly improve upon) those metadata values, estimates of these values from nightly alert processing are both necessary and sufficient for creating an efficient plan for staging data and executing Pipelines that extend to coaddition.
 
 When values from nightly processing are not available (e.g. in construction, or when testing a new deployment of the operations system), a Staff Scientist sets (or resets) the metadata values from an initial manually-invoked processing run that does not extend to coaddition.
@@ -990,7 +1012,7 @@ The CI System will need to access the same data products from multiple data rele
 This also implies that the CI system needs some way to refer to releases (and other coherent repositories) by name rather than by path since the location of the repositories is not the same for all contexts.
 
 \item
-Possibly a duplicate of SQR1a -- retrieve a coherent set of data given a fully qualified descriptor for a particular data product(s)
+Possibly a duplicate of \useref{SQR1}a -- retrieve a coherent set of data given a fully qualified descriptor for a particular data product(s)
 
 }
 
@@ -1069,15 +1091,15 @@ The inputs to the processing could be:
 \item raw data
 \item an official data release
 \item a large-scale processing run initiated and managed by an operator (as per Operator-Initiated Processing)
-\item another small-scale processing run initiated by the same developer (as per SCIVAL1a)
-\item another small-scale processing run initiated by a different developer (as per SCIVAL1a)
-\item a processing run executed automatically on a predefined cadence by the CI System (as per CI1)
+\item another small-scale processing run initiated by the same developer (as per \useref{SCIVAL1}a)
+\item another small-scale processing run initiated by a different developer (as per \useref{SCIVAL1}a)
+\item a processing run executed automatically on a predefined cadence by the CI System (as per \useref{CI1})
 \end{itemize}
 
 The output data products are typically needed for only a few weeks, but should only be deleted by the developer or with the developer's permission.  Some mechanism (possibly policy-only) should ensure that data products are not deleted if they are still in use by another developer.
 
 \item
-Like SCIVAL1a, but instead of testing a configuration change, the developer wishes to test a code change, which could be an of the following scenarios:
+Like \useref{SCIVAL1}a, but instead of testing a configuration change, the developer wishes to test a code change, which could be an of the following scenarios:
 
 \begin{enumerate}
 \item The new code has already been included in a managed software release.
@@ -1086,14 +1108,14 @@ Like SCIVAL1a, but instead of testing a configuration change, the developer wish
 \end{enumerate}
 
 \item
-Like SCIVAL1a, but instead of testing a configuration change, the developer wishes to test a new set of calibration products.
+Like \useref{SCIVAL1}a, but instead of testing a configuration change, the developer wishes to test a new set of calibration products.
 \begin{enumerate}
 \item The new calibration products have already been made available to the operations production system.
 \item The new calibration products are experimental and have not been made available to the operations production sysetem.
 \end{enumerate}
 
 \item
-Like SCIVAL1a, but the Staff Scientist wants to test a totally new algorithm that produces new data product types.
+Like \useref{SCIVAL1}a, but the Staff Scientist wants to test a totally new algorithm that produces new data product types.
 \begin{enumerate}
 \item The new data products are defined along an existing combination of units of data (e.g., tract+patch+filter, which is already used by many coadd data products).
 \item The new data products are defined along a new combination of existing units of data (e.g., sensor+filter, which are used individually to define other data products but have not appeared before without visit before now).
@@ -1104,13 +1126,13 @@ Like SCIVAL1a, but the Staff Scientist wants to test a totally new algorithm tha
 \usecase{SCIVAL2}{Operator-initiated processing}{%
 
 \item
-Like SCIVAL1a, but involving a much larger processing run that will consume up to thousands of core weeks and tens of petabytes of storage.
+Like \useref{SCIVAL1}a, but involving a much larger processing run that will consume up to thousands of core weeks and tens of petabytes of storage.
 The Staff Scientist requesting the run starts by obtaining permission for a large run and defining the storage duration of the outputs according to some TBD policy.
 A Batch Production Operator then initiates and manage the new processing run, depending on the actual size of the job and the need for human intervention in executing it.
 In general, this could involve multiple Pipelines and many batch submissions.
 
-If the change being tested is a code change (like SCIVAL1b), it can be assumed that the new code has been included in a managed software release, and if it is a new set of calibration products (like SCIVAL1c) the calibration products can be assumed to be made available to the operations production system.
-New data product types (like SCIVAL1d) to support a single processing run need not be supported, as long is there is a separate mechanism for adding new data product types to the production system as e.g., part of a managed software release.
+If the change being tested is a code change (like \useref{SCIVAL1}b), it can be assumed that the new code has been included in a managed software release, and if it is a new set of calibration products (like \useref{SCIVAL1}c) the calibration products can be assumed to be made available to the operations production system.
+New data product types (like \useref{SCIVAL1}d) to support a single processing run need not be supported, as long is there is a separate mechanism for adding new data product types to the production system as e.g., part of a managed software release.
 
 }
 
@@ -1121,9 +1143,9 @@ Following one or more processing runs, a Staff Scientist or Astronomer uses a no
 The input data may come from any combination of:
 \begin{itemize}
 \item official data releases
-\item small-scale processing runs (as per SCIVAL1a, only for Staff Scientists, not general Astronomers)
-\item large-scaling processing runs (as per SCIVAL2, only for Staff Scientists, not general Astronomers)
-\item processing runs executed automatically on a predefined cadence by the CI System (as per CI1, only for Staff Scientists, not general Astronomers)
+\item small-scale processing runs (as per \useref{SCIVAL1}a, only for Staff Scientists, not general Astronomers)
+\item large-scaling processing runs (as per \useref{SCIVAL2}, only for Staff Scientists, not general Astronomers)
+\item processing runs executed automatically on a predefined cadence by the CI System (as per \useref{CI1}, only for Staff Scientists, not general Astronomers)
 \item local data repositories in the notebook environment's filesystem or some other per-user space.
 \end{itemize}
 Any combination of these may be compared in a single analysis session.
@@ -1139,16 +1161,16 @@ Plots, tabular data, and overplotted images may also be saved or loaded in the s
 \usecase{SCIVAL4}{Multi-scale Spatial Analysis}{%
 
 \item
-Like SCIVAL3, but the Staff Scientist wishes to inspect values of a set of metrics on multiple spatial scales in an image-like display, reflecting different binning in aggregate calculations.
+Like \useref{SCIVAL3}, but the Staff Scientist wishes to inspect values of a set of metrics on multiple spatial scales in an image-like display, reflecting different binning in aggregate calculations.
 To enable efficient inspection of large areas of sky, the metrics to be inspected may need to be precomputed on the coarser grids of interest before interactive analysis begins.
 
-As with SCIVAL3, the inputs to this processing will usually be catalog values stored in a database, but they may be catalog values that have not yet been ingested into a database.
+As with \useref{SCIVAL3}, the inputs to this processing will usually be catalog values stored in a database, but they may be catalog values that have not yet been ingested into a database.
 The metric values will often be compared to (binned) image data on the same spatial scales, which may also require some preprocessing of image data.
 
 In addition to the gridded metric values themselves, the outputs may involve intermediate data products that can be used for more in-depth analysis.
 For example, the summary metric may be the width of a color-color scatter diagram in a certain direction, and the intermediate data product might be the filtered set of data points used to construct the color-color scatter diagram.
 
-After the necessary preprocessing, the Staff Scientist utilizes the same display tools as in SCIVAL3, but with the image display able to zoom out to much larger areas using binned (and stitched) images and overlays of the binned metric values included.
+After the necessary preprocessing, the Staff Scientist utilizes the same display tools as in \useref{SCIVAL3}, but with the image display able to zoom out to much larger areas using binned (and stitched) images and overlays of the binned metric values included.
 
 }
 
