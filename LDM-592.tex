@@ -56,11 +56,11 @@ The use cases make use of a standard set of Actors.
 \subsection{Staff Scientist or Staff Developer}
 
 \begin{description}
-\item[Data Facility Scientist] Data Facility Scientist (leadership?)
+\item[Data Facility Scientist] Data Facility Scientist
 \item[Pipelines Developer] Science Operations Scientist (algorithm developer)
-\item[Validation Scientist] Science Operations Scientist (long term perofmrnace)
+\item[Validation Scientist] Science Operations Scientist (long term performance)
 \item[Validation Scientist Collaborator] Collaborator with Science OPS (non-LSST funded)
-\item[Developer] Non-science LSST-funded developer (e.g., QSERV, Batch Processing Service, LSP)
+\item[Developer] Non-science LSST-funded developer (e.g., Qserv, Batch Processing Service, LSP)
 \item[Batch Production Operator] Production Operator for DRP (has additional privileges)
 \item[Commissioning Scientist] Scientist involved in commissioning (has additional privileges)
 \end{description}
@@ -89,7 +89,7 @@ The prompt processing system launches the alert production SuperTask (one instan
 The alert production SuperTask computes the desired criteria for calibration products, position and photometric reference catalogs, and image templates and loads them via the Butler.
 It then places a load request for the first of the two crosstalk-corrected snap images, and blocks waiting for it to arrive.
 After the first snap arrives, the task may perform some image processing (e.g. ISR) on that before requesting the second image and blocking again.
-To get adequate performance this may require the ability to for SuperTasks to cooperatively run in parallel, e.g. so one can wait for the second snap while another processes the first snap.
+To get adequate performance this may require the ability for SuperTasks to cooperatively run in parallel, e.g. so one can wait for the second snap while another processes the first snap.
 
 \item
 The alert generation task (one instance per node) processes the second crosstalk-corrected snap image and combines the two snaps into one exposure.
@@ -108,7 +108,8 @@ Steps include:
 
 \item
 The alert production SuperTask gets DIA Objects from the L1 database via the Butler, performing a spatial query and blocking on the result.
-If this step is slow, it have to be done as a parallel SuperTask that is started while image is being done and runs in the background. However, it done as late as possible in order to give time for the DIA Objects from the previous field to be inserted into the L1 database (though this only matters when two consecutive fields overlap).
+If this step is slow, it have to be done as a parallel SuperTask that is started while image processing is being done and run in the background.
+However, it should be done as late as possible in order to give time for the DIA Objects from the previous field to be inserted into the L1 database (though this only matters when two consecutive fields overlap).
 
 \item
 The alert production SuperTask associates DIA Objects with DIA Sources
@@ -126,12 +127,12 @@ This will be done via the Butler talking to the alert broker, unless a more dire
 \usecase{AP1.catchup}{Catch up processing: process images during the day and do not issue alerts}{%
 
 \item
-This is a minor variant of AP1. Some raw images may have to be processed during the day (all will be processed that way.
-when the telescope first goes on sky, later this may be needed if normal prompt processing fails during the night)
+This is a minor variant of AP1.
+Some raw images may have to be processed during the day (all will be processed that way when the telescope first goes on sky, later this may be needed if normal prompt processing fails during the night)
 
 The primary differences from API are:
 \begin{itemize}
-\item The job is managed differently; I believe it will be triggered manually by an Observer
+\item The job is managed differently; it will be triggered manually by a Batch Production Operator.
 \item No alerts will be broadcast.
 \end{itemize}
 
@@ -196,7 +197,7 @@ Note: dataset prototypes also simplify repository configuration and provide flex
 \usecase{AP4}{Persistence from alert generation pipelines}{%
 
 \item
-A pipelines developer is writing the task that packages up DIAObjects into alerts.
+A Pipelines Developer is writing the task that packages up DIAObjects into alerts.
 
 \item
 They want to publish the alerts to the alert distribution system, but they also want to preserve the difference images and DIASource measurements resulting from those difference images.
@@ -208,7 +209,7 @@ They want to publish the alerts to the alert distribution system, but they also 
 \usecase{ARCH1}{HDF5 Data Products}{%
 
 \item
-A Developer wants to read in some raw data files in FITS format and do test processing runs writing out FITS in one case and HDF5 in the other in order to compare performance differences.
+A Developer wants to read in some raw data files in FITS format and do test processing runs writing out FITS, in one case, and HDF5 in the other, in order to compare performance differences.
 This will include creation of images and catalogs in both formats.
 
 \item
@@ -221,18 +222,20 @@ Once the outputs have been validated in HDF5 format, a mini production run is sc
 \usecase{ARCH2}{Same dataset type, multiple format outputs}{%
 
 \item
-A Developer wants to confirm that HDF5 and FITS files produced by a task have identical content. Rather than duplicate processing, the task is configured to write each output dataset in HDF5 and in FITS format.
+A Developer wants to confirm that HDF5 and FITS files produced by a task have identical content.
+Rather than duplicate processing, the task is configured to write each output dataset in HDF5 and in FITS format.
 
 \item
-An afterburner is used when processing is complete that reads in both forms of the output for a single dataset type, and they are analyzed to confirm that they contain the same information.
+Once processing is complete, the Developer runs some code that that reads in both forms of the output for a single dataset type.
+The resultant Python objects from each input format are compared to confirm that they contain the same information.
 
 }
 
 \usecase{ARCH3}{Batch processing data with EFD and updated WCS and visit metadata}{%
 
 \item
-A QA scientist wants to process all the visits taken in the u filter from an engineering night last month using a bespoke processing pipeline.
-The processing will need a number of "high-resolution" telemetry feeds from the EFD and a fully-populated data header for each visit using updated values, including an updated WCS from the L1 system.
+A Science Validation Scientist wants to process all the visits taken in the $u$ filter from an engineering night last month, using a bespoke processing pipeline.
+The processing will need a number of "high-resolution" telemetry feeds from the EFD and a fully-populated data header for each visit, using updated values, including an updated WCS from the L1 system.
 
 \item
 They submit their request to the batch system (either directly or through an intermediary) and wait for the results.
@@ -251,15 +254,15 @@ The jobs complete and the Astronomer accesses the output files and reads them in
 A Scientist submits a processing request from a notebook to the batch processing system that will result in multiple jobs being executed.
 
 \item
-They know that each job will have created some output data in a different location but when they are signalled that the jobs have been completed they are presented with a single data repository containing all the results.
+They know that each job will have created some output data in a different location but when they are informed that the jobs have been completed they are presented with a single data repository containing all the results.
 
 }
 
 \usecase{ARCH5}{Provenance in downloaded files}{%
 
 \item
-An Astronomer downloads a coadd from the Data Access Center portal that comes with full metadata (they do not know this might be a composite dataset in the DAC).
-They want to see how it changed from the version they have from the previous data release which they were using for their research paper.
+An Astronomer downloads a coadd from the Data Access Center portal that comes with full metadata.
+They want to see how the current version of the coadd has changed compared to the version they are using, which came from an older data release
 
 \item
 They read the data description document for this release and determine where the provenance is located in the file.
@@ -284,7 +287,7 @@ A Commisioning Scientist wants to analyze commissioning data, including calibrat
 \usecase{COMM2}{High latency Q/A with EFD}{%
 
 \item
-The Commissioning Scientists will need to do analysis of commissiong data at the commissioning archive with access to the engineering facilities database (EFD) on latencies of days to weeks.
+The Commissioning Scientists will need to do analysis of commissiong data at the commissioning area of the Data Facility with access to the engineering facilities database (EFD) on latencies of days to weeks.
 
 }
 
@@ -297,7 +300,7 @@ Commissioning scientists will create custom repositories containing specific com
 They will then do additional analysis that will add value to the raw data: e.g.\ source catalogs matched to telemetry, further algorithmic outputs.
 
 \item
-These value added repositories then need to be shareable to the commissioning archive and potentially to QA collaborators.
+These value added repositories then need to be stored in persistence storage at the Data Facility and potentially available to Science Validation Collaborators.
 
 }
 
@@ -343,7 +346,7 @@ At regular intervals (perhaps coincident with major software releases), the comm
 \usecase{COMM9}{External datasets}{%
 
 \item
-The commissioning scientists will need access to external reference datasets to compare to.
+The Commissioning Scientists will need access to external reference datasets to compare against.
 For example, compare the width of the stellar locus from PS1 to the width from LSST processing of similar imaging data.
 
 }
@@ -365,8 +368,8 @@ Commissioning scientists will want to compare analyisis on commissioning data to
 \usecase{COMM12}{On the fly processing of engineering data}{%
 
 \item
-Commisssioning scientists will need to spawn on the fly processing of engineering data (e.g.\ focus sweeps) that will potentially feed back to the system configuration in a relatively tight loop.
-This processing may require both one off investigatory type and more formal batch style.
+Commisssioning scientists will need to spawn on-the-fly processing of engineering data (e.g.\ focus sweeps) that will potentially feed back to the system configuration in a relatively tight loop.
+This processing may require both one off investigations or batch style processing.
 In any case, these activities will have to happen on the commissioning clusters.
 
 }
@@ -374,7 +377,7 @@ In any case, these activities will have to happen on the commissioning clusters.
 \usecase{COMM13}{Calibration products pipelines}{%
 
 \item
-The commissioning scientists want to spawn computation of master calibration products on many different cadences: inter-night, daily, monthly, on release cadence.
+The Commissioning Scientists want to spawn computation of master calibration products on many different cadences: during the night, daily, monthly, per data release.
 This will require these pipelines to run both on the commissioining cluster and the archive clusters.
 There will be a SuperTask that computes these master calibration frames and will be spun up in both contexts.
 
@@ -402,7 +405,7 @@ The input data needs to be disaster recoverable, but the outputs (strictly speak
 \usecase{CI2}{Export execution metadata to external apps}{%
 
 \item
-In the CI system the running code will be instrumented to produce measurements of various metrics: both technical like runtime and more algorithm related like number of sources.
+In the CI system the running code will be instrumented to produce measurements of various metrics: both technical, like runtime, and more algorithm related, like number of sources.
 The CI system packages measurements of coded metrics from each of the potentially parallel executions of the CI pipelines.
 
 \item
@@ -422,7 +425,7 @@ This leads to a desire for the input repositories to reside in a storage format 
 
 }
 
-\section{Data Access}
+\section{Data Access (DAX)}
 
 \usecase{DAX1}{Pre-caching data}{%
 
@@ -485,11 +488,11 @@ The file is returned to the Astronomer.
 Many users are requesting images, potentially both stitched and postage stamps, from a common region of the sky.
 
 \item
-In order to prevent hits to network disks and provide low latency performance, DAX services will cache images, potentially dynamically adjusting the size of cached data.
+In order to reduce reading of network disks and provide low latency performance, DAX services will cache images, potentially dynamically adjusting the size of cached data.
 
 \item
 Involved in this is the augmentation of headers of the returned images, which is a standard DAX function.
-The DAX services may need to persist data structures optimized for this type of caching.
+The DAX services may need to persist data structures optimized for this type of caching to avoid having to repeat the header augmentation phase.
 
 }
 
@@ -515,7 +518,7 @@ They have another collection that is from the previous version but this one can 
 An Astronomer downloads images from the LSST DAC using the VO.
 
 \item
-The images end up in a single directory with no structure.
+The images may end up in a single directory with no structure.
 These images might also include composites as separate files.
 
 \item
@@ -533,7 +536,7 @@ Use cases numbered 101 and above were sourced from IN2P3.
 \item
 A Production Operator wants to generate coadds for a tract of sky for all good data for a particular filter.
 They decide on the version of the software to use, the configuration parameters and the specific SuperTasks to execute.
-The input files that are required for the job to compute must be determined (e.g., using a normal sql query or they query the SuperTasks with the parameters)
+The input files that are required for the job to execute must be determined (e.g., using a normal sql query or they query the SuperTasks with the parameters)
 
 (alternate)
 During pre-flight, expected output filenames (and paths within compute job) must be determined (e.g., using operator configuration or querying the SuperTasks with the parameters)
@@ -543,7 +546,8 @@ One of the files reported as being an expected output file has a name that is al
 Files in the data backbone should be unique so an exception is raised and the operator must check the configuration that was used by the supertask.
 
 \item
-The relevant files may be pre-staged to a filesystem closer to the compute site and the job is submitted to the batch system.
+The relevant files may be pre-staged to a filesystem closer to the compute site.
+The job is then submitted to the batch system.
 The batch system job transfers those files to the processing node and starts the SuperTask, configuring it with the output from the intial query of the SuperTask.
 
 (error)
@@ -556,7 +560,7 @@ The SuperTask should not be allowed to overwrite an existing output file when ru
 This should have been caught as an error during pre-flight, so if it happens during runtime it is an unexpected error.
 
 \item
-When the job completes, the job's file system the expected output files that have been configured to be saved are either stored in a staging area closer to the compute site and then to the data backbone or directly back to the data backbone.
+When the job completes, the expected output files that have been configured to be saved to the job's file system, are either stored in a staging area closer to the compute site and then to the data backbone or directly back to the data backbone.
 At operator's request unexpected output files may be saved as a junk tarball which is also brough back to the data backbone in the same manner.
 
 \item
@@ -641,8 +645,8 @@ They make some minor modifications to the notebook and run it on a set of visits
 Based on the results of this analysis they discover an anomaly and decide to plot the calculated seeing quality from their reduction against some environmental parameters read from the EFD.
 
 \item
-The next morning they want to do a more extensive analysis of the night's data, they log into the LSP at the archive center and runs the same notebook submitting batch jobs for much of the data from the night before.
-They do not edit his notebook to indicate that the EFD data or raw data maybe coming from a different location.
+The next morning they want to do a more extensive analysis of the night's data, they log into the LSP at the archive center and run the same notebook, submitting batch jobs for much of the data from the night before.
+They do not edit this notebook to indicate that the EFD data or raw data maybe coming from a different location.
 
 }
 
@@ -650,7 +654,7 @@ They do not edit his notebook to indicate that the EFD data or raw data maybe co
 
 \item
 A developer has a local repository from which they want to permanently delete a dataset.
-They run a program which deletes the file(s) from disk and updates the local repository such that the file is no longer discovered.
+They run a program which deletes the file(s) from disk and updates the local repository such that the dataset is no longer discoverable.
 
 }
 
@@ -664,12 +668,14 @@ The Scientist re-reduces the coadd in the development area to ensure that the co
 The inputs to the processing run are determined automatically based on the tract specification with the bad observation explicitly flagged to not be included.
 
 \item
-The coadd looks much better without the observation. This information is flagged as suspect, including supporting information, using a standard tool and is examined by the Data Release Board.
-The board agree with the assessment and set the appropriate status in the public system indicating that this observation should no longer be included in coadds.
+The coadd looks much better without the observation.
+The Scientist reports that this observation is suspect, using a standard tool and providing supporting evidence.
+The Data Release Board examines the report, agrees with the assessment, and sets the appropriate status in the public system indicating that this observation should no longer be included in coadds.
 This information is known to all processing centres and can be queried by anyone with data rights since this may affect how people treat previously issued L1 data products.
 
 \item
-When the bad observation is flagged, the same flagging process can be told to also flag/change data status all data products that have contributions from that observation.
+When the bad observation is flagged, the same flagging process can be told
+to flag all data products that have contributions from that observation.
 
 \item
 A Production Operator scans the list of contaminated products and triggers jobs to reprocess them using the updated list of inputs.
@@ -682,7 +688,7 @@ Bad observations are automatically dropped from the list of inputs.
 \item
 An Astronomer wants to reprocess a coadd from a Data Release with all available data.
 They first ensure they can reproduce the coadd from the data release by querying the DAC for all the data files that were used in the original data release.
-They then override the bad observation filtering and retrieve all the raw data that could go into the coadd.
+They then enable inclusion of bad observations, and retrieve all the raw data that could go into the coadd.
 
 }
 
@@ -703,8 +709,8 @@ They submit a batch job to store those files in their LSP workspace and when the
 In order to test that Data Release Production systems are running properly, a Production Operator at NCSA triggers identical processing jobs at multiple sites (e.g., NCSA, France).
 
 \item
-When all the jobs are completed the output products from all jobs are in the data backbone.
-A QA job performs a statistical analysis on both sets of output products to determine whether they are scientifically equivalent (within some threshhold).
+When all the jobs are completed, the output products from all jobs are in the data backbone.
+The Production Operation then triggers a QA job to perform a statistical analysis on both sets of output products to determine whether they are scientifically equivalent (within some threshhold).
 (The output products may either be pre-downloaded from the data backbone or where appropriate can be downloaded from inside the QA job.)
 
 }
@@ -728,11 +734,12 @@ This is a lower-level use case describing an activity that is a part of (at leas
 A SuperTask retrieves a Python object from a stored dataset, given a handle object provided in pre-flight.
 
 \item
-Like \useref{DRP2}a, but the dataset is predefined small part of a larger dataset (such as the PSF of a calibrated exposure).
+Like \useref{DRP2}a, but the dataset is a predefined small part of a larger dataset (such as the PSF of a calibrated exposure).
 This could be supported by having the larger dataset stored as multiple smaller files.
 
 \item
 Like \useref{DRP2}a, but the dataset is composed of multiple files, and some files may contain components that should override those in other files.
+An example of this could be a WCS solution that should then be applied to a raw data file.
 
 \item
 Like \useref{DRP2}c, but the dataset also contains the results of a query to the EFD (or some alternate representation).  This is required for calibration products production.
@@ -769,7 +776,7 @@ This is a lower-level use case describing an activity that is a part of \useref{
 \usecase{DRP6}{SuperTask Output Staging}{%
 
 \item
-After at least some SuperTask execution, the Batch Control System transfers output datasets from temporary storage on the compute resources where they were produced to (more) permanent storage.
+After at least some SuperTask execution, the Batch Control System transfers output datasets from temporary storage on the compute resources where they were produced to permanent storage.
 
 This is a lower-level use case describing an activity that is a part of \useref{SCIVAL2} and (possibly, depending on architecture) \useref{SCIVAL1}.
 
@@ -871,7 +878,7 @@ A Staff Scientist or Astronomer and her colleagues want to access the same data 
 \usecase{DRP18}{Load size}{%
 
 \item
-A Staff Scientist or Astronomer (or the task she is running) wants to be able to access a dataset that is too large to fit in memory as a whole.
+A Staff Scientist or Astronomer (or the task they are running) wants to be able to access a dataset that is too large to fit in memory as a whole.
 }
 
 \usecase{DRP22}{Transactions}{%
@@ -905,7 +912,7 @@ An Astronomer wants to loop over all Datasets of a particular DatasetType in a r
 \usecase{DRP28}{Backwards compatibility}{%
 
 \item
-A Staff Scientist or Astronomer has existing code (written to use \texttt{butler.get()} and \texttt{butler.put()} calls) that he or she wishes to use with no (or minimal) changes.
+A Staff Scientist or Astronomer has existing code (written to use \texttt{butler.get()} and \texttt{butler.put()} calls) that they wish to use with no (or minimal) changes.
 }
 
 \usecase{DRP29}{Multi-Repository File Removal}{%
@@ -941,7 +948,7 @@ Iterate through inputs, display them, and look for bad data.
 \usecase{SQR1.5}{Improve configs}{%
 
 \item
-The QA Collaborator finds the particular calibrated exposure that went into the coadd to mess it up.
+The Science Validation Collaborator finds the particular calibrated exposure that went into the coadd to mess it up.
 They then want to rerun the relevant steps that resulted in the erroneous calibrated exposure to see if they can find a configuration that would create a better calibrated exposure: repeatedly run on the local data with various configs.
 
 \item
@@ -955,7 +962,7 @@ Push corrected configuration into the production config.
 \usecase{SQR2}{Data discovery based on observation/processing metadata}{%
 
 \item
-A QA Scientist wants to find all the catalogs and exposures taken in really good seeing and those in moderate seeing in order to compare the ability to estimate the point spread function as it tends toward the undersampled regime.
+A Science Validation Scientist wants to find all the catalogs and exposures taken in really good seeing and those in moderate seeing in order to compare the ability to estimate the point spread function as it tends toward the undersampled regime.
 
 Discover data based on e.g. seeing cuts.
 This includes image data as well as catalogs produced during processing.
@@ -977,7 +984,7 @@ The developers want to be able to persist the specific Job for this Task by name
 \usecase{SQR5}{Named queries as datasets}{%
 
 \item
-A QA scientist would like to include a test on a specific dataset.
+A Science Validation Scientist would like to include a test on a specific dataset.
 The test includes finding all point like sources at a certain signal to noise with a bright and faint flux cut.
 The scientist produces a query that will retrieve these sources for the dataset in question, and they would like to refer to the query by name as opposed re-writing the query every time.
 They would also like to be able to refer to the same query by the same name in other contexts: i.e., on different, but similar datasets.
@@ -987,7 +994,7 @@ They would also like to be able to refer to the same query by the same name in o
 \usecase{SQR6}{Named blobs as datasets}{%
 
 \item
-The QA scientist is producing a new measurement they would like to track in SQuaSH.
+The Science Validation Scientist is producing a new measurement they would like to track in SQuaSH.
 An intermediate product of calculating the measurement is a plot of magnitude residual vs.\ magnitude with some bounds.
 They would like to persist this so that it is easily retrieveable as a blob later on.
 
@@ -1006,7 +1013,7 @@ They would like to easily access the same data (e.g., calibrated exposures, sour
 \item
 \emph{Context agnostic mechanism to refer to multiple data releases in the same session.}
 
-QA scientists will identify data to use as a "canary" test between releases. They want the size of the data will be manageable, but will provide enough scope to uncover major problems.
+Science Validation Scientists will identify data to use as a "canary" test between releases. They want the size of the data will be manageable, but will provide enough scope to uncover major problems.
 The CI System will need to access the same data products from multiple data releases in the same environment for comparison.
 
 This also implies that the CI system needs some way to refer to releases (and other coherent repositories) by name rather than by path since the location of the repositories is not the same for all contexts.
@@ -1041,7 +1048,7 @@ Being a factor of two inefficient is a huge hit to the impact that can be made w
 \usecase{SQR12}{Example Datasets}{%
 
 \item
-A QA scientist wishes to distribute test datasets with an example in documentations.
+A Science Validation Scientist wishes to distribute test datasets with an example in documentations.
 They would like users to be able to run the example either in the LSP or on their personal compute.
 
 \item
@@ -1175,5 +1182,19 @@ After the necessary preprocessing, the Staff Scientist utilizes the same display
 }
 
 \bibliography{local,lsst,lsst-dm,refs,books,refs_ads}
+
+\section{Acronyms}
+
+\begin{longtable}{|l|p{0.8\textwidth}|}\hline
+\textbf{Acronym} & \textbf{Description}  \\\hline
+
+DAC & Data Access Center\\\hline
+EFD & Engineering \& Facilities Database\\\hline
+EPO & Eduction and Public Outreach\\\hline
+LSP & LSST Science Platform\\\hline
+OCS & Observatory Control System\\\hline
+PVI & Processed Visit Image \\\hline
+
+\end{longtable}
 
 \end{document}
