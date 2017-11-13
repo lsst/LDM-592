@@ -722,7 +722,7 @@ The Production Operation then triggers a QA job to perform a statistical analysi
 \item
 SuperTask activator code obtains a graph representation of the datasets and units of data that a Pipeline may use as inputs and/or outputs.
 Must account for the availability of inputs in the data repository, the relationships between units of data, and user-provided filters on units of data to consider.
-This includes identifying the appropriate calibration dataset to use with a given raw dataset, and identifying raw data and sky patches from each other based on location.
+This includes identifying the appropriate calibration dataset to use with a given raw dataset, and looking up raw data that overlap sky patches or vice versa.
 
 This is a lower-level use case describing an activity that is a part of (at least) \useref{SCIVAL1} and \useref{SCIVAL2}.
 
