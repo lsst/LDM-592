@@ -280,7 +280,8 @@ They look up the PVI associated with that visit and download it from the previou
 \usecase{COMM1}{Low latency Q/A}{%
 
 \item
-A Commisioning Scientist wants to analyze commissioning data, including calibration, engineering and astronomical observations within minutes to hours of the data being taken to fine tune engineering configuration, solve data acquisition problems, identify software issues.
+A Commissioning Scientist wants to analyze commissioning data, including calibration, engineering and astronomical observations shortly after the data being taken to fine tune engineering configuration, solve data acquisition problems, identify software issues.
+This includes rendezvousing engineering and science data in essentially "real time" with latency of order seconds.
 
 }
 
@@ -307,7 +308,7 @@ These value added repositories then need to be stored in persistence storage at 
 \usecase{COMM4}{Comparison of the night's data with archived data}{%
 
 \item
-Commissioning Scientists will want to compare an analysis carried out on the current night's data to data taken the previous lunation.
+Commissioning Scientists will want to compare an analysis carried out on the current night's data to data taken at a previous time separated by many months.
 This means accessing both archived and too-new-to-be-archived data in the same environment.
 
 }
@@ -324,14 +325,14 @@ This could also include tracking the version of the stack used to produce each e
 \usecase{COMM6}{Batch processing of commissioning pipelines}{%
 
 \item
-The commissioning scientists will want to build pipelines that are not exactly AP or DRP pipelines, but that will behave similarly in the sense that they will be runnable in the same batch system.
+The Commissioning Scientists will want to build pipelines that are not exactly AP or DRP pipelines, but that will behave similarly in the sense that they will be runnable in the same batch system.
 
 }
 
 \usecase{COMM7}{Compare processing based on selection in observing or EFD metadata}{%
 
 \item
-The commissioning scientists will want to compare how the system behaves as a function of various quantities.
+The Commissioning Scientists will want to compare how the system behaves as a function of various quantities.
 An example is looking at coadds from the same part of the sky in bright sky conditions versus in dark sky conditions.
 
 }
@@ -339,7 +340,8 @@ An example is looking at coadds from the same part of the sky in bright sky cond
 \usecase{COMM8}{Bulk reprocessing of commissioning pipelines}{%
 
 \item
-At regular intervals (perhaps coincident with major software releases), the commissioning scientists will want to run some set of the commissioning pipelines on all the data taken so far.
+At regular intervals (perhaps coincident with major software releases), the Commissioning Scientists will want to run some set of the commissioning pipelines on all the data taken so far.
+This will include rerunning all verification analysis scripts on verification data to monitor for regressions.
 
 }
 
@@ -354,14 +356,14 @@ For example, compare the width of the stellar locus from PS1 to the width from L
 \usecase{COMM10}{Notebook portabiliity}{%
 
 \item
-The commissioning scientists would like to run exactly the same notebook on exactly the same data as in \useref{COMM4}, but this time at the archive center.
+The Commissioning Scientists would like to run exactly the same notebook on exactly the same data as in \useref{COMM4}, but this time at the archive center.
 
 }
 
 \usecase{COMM11}{Simulated images and catalogs}{%
 
 \item
-Commissioning scientists will want to compare analyisis on commissioning data to the same analysis on simulated images or catalogs.
+Commissioning Scientists will want to compare analyisis on commissioning data to the same analysis on simulated images or catalogs.
 
 }
 
@@ -377,7 +379,7 @@ In any case, these activities will have to happen on the commissioning clusters.
 \usecase{COMM13}{Calibration products pipelines}{%
 
 \item
-The Commissioning Scientists want to spawn computation of master calibration products on many different cadences: during the night, daily, monthly, per data release.
+The Commissioning Scientists want to spawn computation of master calibration products on many different cadences: during the night on the order of minutes, daily, monthly, per data release.
 This will require these pipelines to run both on the commissioining cluster and the archive clusters.
 There will be a SuperTask that computes these master calibration frames and will be spun up in both contexts.
 
@@ -1003,7 +1005,7 @@ They would like to persist this so that it is easily retrieveable as a blob late
 \usecase{SQR7}{Multiple repositories}{%
 
 \item
-A commissioning scientist would like to compare results from reducing the same datasets using two different configurations of the algorithms.
+A Commissioning Scientist would like to compare results from reducing the same datasets using two different configurations of the algorithms.
 They would like to easily access the same data (e.g., calibrated exposures, source catalogs) from within a python interpreter so that they can do comparisons of how the change in configuration affects the output.
 
 }
@@ -1068,7 +1070,7 @@ For efficiency they would like to provide a script that only pulls from the VOSp
 \usecase{SQR15}{Minimize storage in notebooks}{%
 
 \item
-The commissioning scientist wants to look at parts of several different tracts of coadds.
+The Commissioning Scientist wants to look at parts of several different tracts of coadds.
 Pulling over a whole tract is obviously inefficient, but even just pulling the four patches that make up any given subsection of a coadd is inefficient.
 They would like to stream just the subsection of the tract specifically needed.
 
@@ -1077,7 +1079,7 @@ They would like to stream just the subsection of the tract specifically needed.
 \usecase{SQR16}{Notebooks run on archived data}{%
 
 \item
-A commissioning scientist wants to do some historical analysis.
+A Commissioning Scientist wants to do some historical analysis.
 They would like to use the LSP to start their analysis.
 This could include even getting data in deep storage on tape.
 
