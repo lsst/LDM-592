@@ -171,7 +171,7 @@ The user compares the new output to the original output.
 The user, a Staff Scientist, specifies a visit to be processed.
 
 \item
-The butler expands the incomplete DatasetExpresion by setting the filter and selecting only those CCDs for which raw image data is available.
+The butler expands the DatasetExpresion by setting the filter and selecting only those CCDs for which raw image data is available.
 
 \item
 The task processes each image.
@@ -179,7 +179,7 @@ The task processes each image.
 \item
 The task persists the computed data (\texttt{calexp}, etc.)
 
-Note: this use case is intended to highlight the need for the butler to be able to expand an incomplete DatasetExpresion.
+Note: this use case is intended to highlight the need for the butler to be able to expand a DatasetExpresion.
 This expansion only relies on the Butler knowing which datasets exist that match a particular incomplete ID.
 It has nothing to do with searching for data that meets criteria such as PSF size (presumably a different use case).
 
@@ -1218,11 +1218,11 @@ After the necessary preprocessing, the Staff Scientist utilizes the same display
 
 \item[Dataset] Represents a single discrete entity of data, with associated metadata (e.g.\ a particular \texttt{calexp} for a particular instrument corresponding to a particular visit and sensor).
 
-\item[ConcreteDataset] The in-memory manifestation of a Dataset (e.g. an \texttt{afw::image::Exposure} instance with the contents of a particular \texttt{calexp}).
+\item[InMemoryDataset] The in-memory manifestation of a Dataset (e.g. an \texttt{afw::image::Exposure} instance with the contents of a particular \texttt{calexp}).
 
-\item[DatasetType] The conceptual type of which Datasets are instances (e.g.\ \texttt{calexp}).  A new DatasetType can be defined by combining a DatasetMetatype, a DatasetIdentifierType, and a string name.
+\item[DatasetType] The conceptual type of which Datasets are instances (e.g.\ \texttt{calexp}).  A new DatasetType can be defined by combining a StorageClass, a DatasetIdentifierType, and a string name.
 
-\item[DatasetMetatype] A category of DatasetTypes that utilize the same in-memory classes for their ConcreteDatasets and can be saved to the same file format(s), using the same low-level input and output code.
+\item[StorageClass] A category of DatasetTypes that utilize the same in-memory classes for their InMemoryDatasets and can be saved to the same file format(s), using the same low-level input and output code.
 
 \item[DataUnit] Represents a discrete unit of data (e.g.\ a particular visit, tract, or filter) that may be composed to form a DatasetIdentifier.
 
@@ -1249,9 +1249,9 @@ After the necessary preprocessing, the Staff Scientist utilizes the same display
 
 \item[DataGraph] A graph structure containing DatasetRefs and DataUnits as vertices and the connections between them as edges.
 
-\item[Data Input System] A software agent that can be used to read a Dataset from storage into a ConcreteDataset in memory.
+\item[Data Input System] A software agent that can be used to read a Dataset from storage into a InMemoryDataset in memory.
 
-\item[Data Output System] A software agent that can be used to write a ConcreteDataset in memory to a Dataset in storage.
+\item[Data Output System] A software agent that can be used to write a InMemoryDataset in memory to a Dataset in storage.
 
 \item[Data Input/Output System] A software agent that is both an Input System and an Output System.
 
