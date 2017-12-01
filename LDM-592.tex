@@ -171,15 +171,15 @@ The user compares the new output to the original output.
 The user, a Staff Scientist, specifies a visit to be processed.
 
 \item
-The butler expands the incomplete data ID by setting the filter and selecting only those CCDs for which raw image data is available.
+The butler expands the incomplete DatasetExpresion by setting the filter and selecting only those CCDs for which raw image data is available.
 
 \item
 The task processes each image.
 
 \item
-The task persists the computed data (calexp, etc.)
+The task persists the computed data (\texttt{calexp}, etc.)
 
-Note: this use case is intended to highlight the need for the butler to be able to expand an incomplete data ID.
+Note: this use case is intended to highlight the need for the butler to be able to expand an incomplete DatasetExpresion.
 This expansion only relies on the Butler knowing which datasets exist that match a particular incomplete ID.
 It has nothing to do with searching for data that meets criteria such as PSF size (presumably a different use case).
 
@@ -791,7 +791,7 @@ This is a lower-level use case describing an activity that is a part of \useref{
 \usecase{DRP7}{Analysis Metadata Query}{%
 
 \item
-A Staff Scientist or Astronomer obtains a list of data IDs and existing datasets that match an expression within a given output data repository.
+A Staff Scientist or Astronomer obtains a list of DataIDs and existing datasets that match an expression within a given output data repository.
 This includes identifying the appropriate calibration dataset to use with a given raw dataset, and identifying raw data and sky patches from each other based on location.
 
 This is a lower-level use case describing an activity that is a part of \useref{SCIVAL3} and \useref{SCIVAL4}.
@@ -800,7 +800,7 @@ This is a lower-level use case describing an activity that is a part of \useref{
 \usecase{DRP8}{Analysis Dataset Input}{%
 
 \item
-A Staff Scientist or Astronomer obtains an in-memory Python object from a data repository, providing either a data ID or an expression that reduces to a unique data ID.
+A Staff Scientist or Astronomer obtains an in-memory Python object from a data repository, providing either a DataID or an expression that reduces to a unique DataID.
 
 This is a lower-level use case describing an activity that is a part of \useref{SCIVAL3} and \useref{SCIVAL4}.
 
@@ -1211,6 +1211,61 @@ After the necessary preprocessing, the Staff Scientist utilizes the same display
 }
 
 \bibliography{local,lsst,lsst-dm,refs,books,refs_ads}
+
+\section{Glossary}
+
+\begin{description}[style=nextline]
+
+\item[Dataset] Represents a single discrete entity of data, with associated metadata (e.g.\ a particular \texttt{calexp} for a particular instrument corresponding to a particular visit and sensor).
+
+\item[ConcreteDataset] The in-memory manifestation of a Dataset (e.g. an \texttt{afw::image::Exposure} instance with the contents of a particular \texttt{calexp}).
+
+\item[DatasetType] The conceptual type of which Datasets are instances (e.g.\ \texttt{calexp}).  A new DatasetType can be defined by combining a DatasetMetatype, a DatasetIdentifierType, and a string name.
+
+\item[DatasetMetatype] A category of DatasetTypes that utilize the same in-memory classes for their ConcreteDatasets and can be saved to the same file format(s), using the same low-level input and output code.
+
+\item[DataUnit] Represents a discrete unit of data (e.g.\ a particular visit, tract, or filter) that may be composed to form a DatasetIdentifier.
+
+\item[DataUnitType] The conceptual type of which DataUnits are instances (e.g. visit, tract, or filter).
+
+\item[DatasetIdentifier (or DataID)] A tuple of DataUnits that can be used to label a Dataset.
+
+\item[DatasetIdentifierType] A tuple of DataUnitTypes that describe the label for a DatasetType.
+
+\item[DatasetRef] The combination of a DatasetIdentifier and the name of DatasetType, which can be used to uniquely identify a Dataset within a DataRepository.
+
+\item[DataRepository] A collection of Datasets that has the following three properties:
+\begin{itemize}
+\item Has at most one Dataset per DatasetRef;
+\item Has a label that humans can parse (i.e.\ RepositoryRef);
+\item Given a DatasetRef, provides enough information to construct a filename (or key for an object store, or other URI, or set thereof) that is unique across all DataRepositories in a DataRepositoryGroup.
+\end{itemize}
+
+\item[DataRepositoryGroup] A collection of related DataRepositories.
+
+\item[DataRepositoryRef] A human-parseable name for a DataRepository that uniquely identifies it within a DataRepositoryGroup.
+
+\item[DatasetExpression] A expression matching one or more Datasets; something like a SQL WHERE against a common schema in which each DataUnit is a table.
+
+\item[DataGraph] A graph structure containing DatasetRefs and DataUnits as vertices and the connections between them as edges.
+
+\item[Data Input System] A software agent that can be used to read a Dataset from storage into a ConcreteDataset in memory.
+
+\item[Data Output System] A software agent that can be used to write a ConcreteDataset in memory to a Dataset in storage.
+
+\item[Data Input/Output System] A software agent that is both an Input System and an Output System.
+
+\item[Data Discovery System] A software agent that can be used to identify, filter, and relate Dataset and DataUnits using their metadata.
+
+\item[Data Transfer System] A software agent that can move Datasets from one storage system to another.
+
+\item[Scientific Data Format] A file format suitable for data processing and analysis (eg FITS/HDF5 and not JPEG/PNG).
+
+\item[Data Repository Creation System] System that creates a data repository from components.
+
+\item[Composite Dataset] A Dataset made up of more than one items which are themselves Datasets (e.g.\ \texttt{MaskedImage} + PSF + Metadata = \texttt{Exposure})
+\end{description}
+
 
 \section{Acronyms}
 
