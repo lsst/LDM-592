@@ -124,13 +124,17 @@ This will be done via the Butler talking to the alert broker, unless a more dire
 
 }
 
+\begin{draftnote}
+\emph{Petravick:} AP1 does not mention feedback of some data quality results back to the observatory.
+\end{draftnote}
+
 \usecase{AP1.catchup}{Catch up processing: process images during the day and do not issue alerts}{%
 
 \item
-This is a minor variant of AP1.
+This is a minor variant of \useref{AP1}.
 Some raw images may have to be processed during the day (all will be processed that way when the telescope first goes on sky, later this may be needed if normal prompt processing fails during the night)
 
-The primary differences from API are:
+The primary differences from \useref{AP1} are:
 \begin{itemize}
 \item The job is managed differently; it will be triggered manually by a Batch Production Operator.
 \item No alerts will be broadcast.
@@ -298,12 +302,16 @@ The Commissioning Scientists will need to do analysis of commissiong data at the
 Commissioning scientists will create custom repositories containing specific commissioning data.
 
 \item
-They will then do additional analysis that will add value to the raw data: e.g.\ source catalogs matched to telemetry, further algorithmic outputs.
+They will then do additional analysis that will add value to the raw data: e.g.\ source catalogs matched to telemetry, further algorithmic outputs, and also technical reports.
 
 \item
 These value added repositories then need to be stored in persistence storage at the Data Facility and potentially available to Science Validation Collaborators.
 
 }
+
+\begin{draftnote}
+  \emph{Petravick:} Please give some indication of retention policies.
+\end{draftnote}
 
 \usecase{COMM4}{Comparison of the night's data with archived data}{%
 
@@ -318,7 +326,7 @@ This means accessing both archived and too-new-to-be-archived data in the same e
 \item
 Commissioning scientists will need to do analysis of lightcurve provenance.
 That is, given a set of associated source measurements for a particular set of objects, match up each epoch to the observation metadata and any relevant telemetry from the EFD to look for correlations between observational conditions, engineering information, and features in the lightcurves.
-This could also include tracking the version of the stack used to produce each epoch (though I hope the bulk reprocessing of commissioning data will help with this).
+This could also include tracking the version of the stack used to produce each epoch.
 
 }
 
@@ -449,10 +457,6 @@ See \useref{DRP17}
 See \useref{DRP18}
 
 }
-
-\begin{draftnote}
-  Brian: I reworded DAX5 into a use case. Please check it. Also DAX8 and DAX9
-\end{draftnote}
 
 \usecase{DAX5}{Efficient caching of dataset cutouts}{%
 
@@ -862,34 +866,51 @@ When values from nightly processing are not available (e.g. in construction, or 
 \item
 A Staff Scientist produces a set of master calibration products via a set of processing runs runs (possibly in a different environment) and adds them to a data repository for use in other processing runs.
 Old master calibration products should remain available, but one or more "preferred" labels may need to be transferred to the new products.
+Each set of master calibration products includes data products with (date or visit) validity ranges; selecting the set of calibrations to be used for a processing run is distinct from selecting the data product within that set to use for a particular observation.
 When the data repository is part of the operations system, this is done by a Batch Production Operator, not arbitrary Staff Scientists.
 }
 
 \usecase{DRP16}{Pre-cache data}{%
 
 \item
-A Staff Scientist or Astronomer is going to a conference and wants to pre-cache some data, from a remote repository, to be able to access through the butler while without network connectivity.
+A Staff Scientist or Astronomer is going to a conference and wants to pre-cache some data from a remote repository, to be able to access through the butler while without network connectivity.
 }
 
 \usecase{DRP17}{Shared cache}{%
 
 \item
-A Staff Scientist or Astronomer and her colleagues want to access the same data (or overlapping) from a remote repository. It would be efficient if this can be cached in an on-site proxy.
+A Staff Scientist or Astronomer and her colleagues want to access the same data (or overlapping) from a remote repository.
+
+\item
+The first time someone downloads the data it is stored in a shared local cache.
+
+\item
+Subsequent retrieval requests from others sharing the on-site proxy can retrieve the same data locally.
+
 }
 
 \usecase{DRP18}{Load size}{%
 
 \item
 A Staff Scientist or Astronomer (or the task they are running) wants to be able to access a dataset that is too large to fit in memory as a whole.
+
+\item
+When requesting the data they specify a smaller region of the image and/or restrict the retrieval to only the parts of the composite that they really need.
+
 }
 
 \usecase{DRP22}{Transactions}{%
 
 \item
 A SuperTask or the Batch Control System needs to write a dataset to a repository which is backed by multiple media (e.g., part goes to file, part to a database).
-This needs to happen atomically in a single blocking ACID transaction.
-Either all of the data is written, or none of it is (and an exception is thrown).
-i.e., it should offer the strong exception guarantee.
+
+\item
+The system waits for all write operations to complete.
+
+\item
+One of the writes fails and an attempt is made to undo the writes that did succeed.
+The SuperTask is told whether everything was written, or nothing was written, but does not need to understand the case where some of the data was written.
+
 }
 
 \usecase{DRP23}{User interactions}{%
@@ -925,6 +946,13 @@ Some of the processing runs to be deleted were based on inputs produced in other
 After removing the to-be-deleted data repositories, the files that are no longer used by any repository are identified and deleted, while those in the to-be-kept repositories are not.
 }
 
+\usecase{DRP30}{Forced deletion of datasets}{%
+
+\item
+One or more data products are deleted by a production operator or other authorized actor, without regard for which data repositories or other users may refer to them.
+In some contexts this may not remove all record of these datasets held outside their primary storage locations, as long as the storage cost of those records is negligible.
+}
+
 \section{Science Quality and Reliability Engineering}
 
 \usecase{SQR1}{QA Drilldown}{%
@@ -934,13 +962,11 @@ A Science Validation Collaborator wants to use the Notebooks Aspect of the Scien
 They know how to find a difference image that did not turn out well, but do not know if it was the template or science image that caused the problem.
 They want an easy way to iterate over just the data relevant to the difference image for every dataset type that went into the particular run to try to figure out what data were the problem.
 
-Identify data related to a particular difference image: coadd, warps, calexps, direct image, etc.
+\item
+Retrieve identified data into local filesystem visible to the notebook.
 
 \item
-Retrieve identified data into local filesystem.
-
-\item
-Rebuild intermediates
+Rebuild intermediates.
 
 \item
 Iterate through inputs, display them, and look for bad data.
@@ -950,7 +976,8 @@ Iterate through inputs, display them, and look for bad data.
 \usecase{SQR1.5}{Improve configs}{%
 
 \item
-The Science Validation Collaborator finds the particular calibrated exposure that went into the coadd to mess it up.
+
+The Science Validation Collaborator finds a particular calibrated exposure that messed up a coadd (from \useref{SQR1})
 They then want to rerun the relevant steps that resulted in the erroneous calibrated exposure to see if they can find a configuration that would create a better calibrated exposure: repeatedly run on the local data with various configs.
 
 \item
@@ -970,16 +997,16 @@ Discover data based on e.g. seeing cuts.
 This includes image data as well as catalogs produced during processing.
 
 \item
-Stage discovered data to a data store where they can be examined further.
+Stage discovered data to a shared distributed filesystem where they can be examined further.
 
 }
 
 \usecase{SQR4}{Job/Metric/Measurement persistence}{%
 
 \item
-A developer is helping a pipelines developer instrument an image characterization Task to measure a specific set of metrics and publish them to SQuaSH.
-The verify system comprises a Job object which contains many Measurments of different Metrics.
-The developers want to be able to persist the specific Job for this Task by name so that it can later be retrieved by name.
+A developer instruments an image characterization Task in order to measure a specific set of metrics about the Task.
+
+The developer wants to publish this set of metrics to SQuaSH, using a descriptive name to simplify retrieval of these results later.
 
 }
 
@@ -1006,7 +1033,7 @@ They would like to persist this so that it is easily retrieveable as a blob late
 
 \item
 A Commissioning Scientist would like to compare results from reducing the same datasets using two different configurations of the algorithms.
-They would like to easily access the same data (e.g., calibrated exposures, source catalogs) from within a python interpreter so that they can do comparisons of how the change in configuration affects the output.
+They would like to easily access the same data (e.g., calibrated exposures, source catalogs) from within a python interpreter so they can determine how the change in configuration affects the output.
 
 }
 
@@ -1050,7 +1077,7 @@ Being a factor of two inefficient is a huge hit to the impact that can be made w
 \usecase{SQR12}{Example Datasets}{%
 
 \item
-A Science Validation Scientist wishes to distribute test datasets with an example in documentations.
+A Science Validation Scientist wishes to distribute test datasets with an example in documentation.
 They would like users to be able to run the example either in the LSP or on their personal compute.
 
 \item
@@ -1193,7 +1220,7 @@ After the necessary preprocessing, the Staff Scientist utilizes the same display
 DAC & Data Access Center\\\hline
 EFD & Engineering \& Facilities Database\\\hline
 EPO & Eduction and Public Outreach\\\hline
-LSP & LSST Science Platform\\\hline
+LSP & LSST Science Platform \citedsp{LSE-319} \\\hline
 OCS & Observatory Control System\\\hline
 PVI & Processed Visit Image \\\hline
 
