@@ -426,11 +426,11 @@ This information will be exported from the CI system and ingested into a system 
 \usecase{CI3}{CI in cloudy environments}{%
 
 \item
-The batch production operator wants to run multiple builds and CI runs in multiple VMs within the same cluster.
+The Batch Production Operator wants to run multiple builds and CI runs in multiple VMs within the same cluster.
 
 \item
 They want to be as efficient as possible so only allocate as many resources as absolutely needed for each run.
-The CI datasets are of order 1TB, so the batch production operator would like to keep the amount of data replicated to local disk as small as possible.
+The CI datasets are of order 1TB, so the Batch Production Operator would like to keep the amount of data replicated to local disk as small as possible.
 This leads to a desire for the input repositories to reside in a storage format that plays well in the cloud ecosystem.
 
 }
@@ -716,7 +716,7 @@ In order to test that Data Release Production systems are running properly, a Pr
 
 \item
 When all the jobs are completed, the output products from all jobs are in the data backbone.
-The Production Operation then triggers a QA job to perform a statistical analysis on both sets of output products to determine whether they are scientifically equivalent (within some threshhold).
+The Production Operator then triggers a QA job to perform a statistical analysis on both sets of output products to determine whether they are scientifically equivalent (within some threshhold).
 (The output products may either be pre-downloaded from the data backbone or where appropriate can be downloaded from inside the QA job.)
 
 }
@@ -949,7 +949,7 @@ After removing the to-be-deleted data repositories, the files that are no longer
 \usecase{DRP30}{Forced deletion of datasets}{%
 
 \item
-One or more data products are deleted by a production operator or other authorized actor, without regard for which data repositories or other users may refer to them.
+One or more data products are deleted by a Production Operator or other authorized actor, without regard for which data repositories or other users may refer to them.
 In some contexts this may not remove all record of these datasets held outside their primary storage locations, as long as the storage cost of those records is negligible.
 }
 
