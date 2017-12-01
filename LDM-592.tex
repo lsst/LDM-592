@@ -96,14 +96,14 @@ The alert generation task (one instance per node) processes the second crosstalk
 Steps include:
 \begin{itemize}
 \item Perform instrument signature removal on the second snap.
-\item Detect cosmic rays by comparing the two snaps,
+\item Detect cosmic rays by comparing the two snaps.
 \item Combine the two snaps into a single exposure.
 \item Peform single-frame calibration: determine a PSF, mask additional cosmic rays, if any, refine the WCS based on the position reference catalog and determine a photometric zero point based on the photometric reference catalog.
-\item Save the calibrated exposure and detected source catalog
+\item Save the calibrated exposure and detected source catalog.
 \item Subtract the calibrated image from the template to produce a difference image.
-\item Save the difference image
-\item Detect DIA Sources on the difference image
-\item Save the DIA Source catalog"
+\item Save the difference image.
+\item Detect DIA Sources on the difference image.
+\item Save the DIA Source catalog.
 \end{itemize}
 
 \item
