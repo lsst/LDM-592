@@ -1126,6 +1126,18 @@ This could include even getting data in deep storage on tape.
 
 }
 
+\usecase{SQR17}{Retrieve Job data based on metric values.}{%
+
+\item
+On a regular cadence, the continuous integration system runs a script that generates measurements of various properties of a test dataset: e.g. photometric and astrometric repeatability.
+These measurements with associated data are persisted as a JSON document describing a \texttt{Job} object.
+The JSON object is published to SQuaSH.
+
+\item
+At some later point, the SQuaRE scientist retrieves all \texttt{Job}s that were run in the last month where the measurement of the photometric repeatablity is greater than 15 mas.
+
+}
+
 \section{Science Validation}
 
 
