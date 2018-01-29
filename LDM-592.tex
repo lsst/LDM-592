@@ -967,6 +967,18 @@ A statistical analysis is done with the catalogs derived from both data releases
 
 }
 
+\usecase{DRP32}{Use of rerun collections}{%
+
+\item
+A Developer runs some processing starting from outputs produced by another Developer, where those outputs are specified as inputs using a label given as a single string (possibly with path-like namespace components).
+They specify a new label to use for the output data location.
+When the processing completes, all of the contents of the inputs (or at least all of the items actually used as inputs) will appear to be present in the output collection.
+
+\item
+The developer then wants to run additional processing with both inputs and outputs coming from what was previously just the output collection.
+
+}
+
 \section{Science Quality and Reliability Engineering}
 
 \usecase{SQR1}{QA Drilldown}{%
