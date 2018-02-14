@@ -1,7 +1,8 @@
 \documentclass[DM,toc,lsstdraft]{lsstdoc}
 
 \setDocChangeRecord{%
-\addtohist{1.0}{2017-11-13}{Initial version from Working Group internal spreadsheet.} {T.~Jenness}
+\addtohist{}{2017-11-13}{Initial version from Working Group \citedsp{LDM-563} internal spreadsheet.} {T.~Jenness}
+\addtohist{1.0}{2018-02-14}{Approved in \jira{RFC-413}}{T.~Jenness}
 }
 
 \title{Data Access Use Cases}
@@ -954,6 +955,31 @@ One or more data products are deleted by a Production Operator or other authoriz
 In some contexts this may not remove all record of these datasets held outside their primary storage locations, as long as the storage cost of those records is negligible.
 }
 
+\usecase{DRP31}{Compare with previous data releases}{%
+
+\item
+A new data release is prepared by the Production Operators.
+
+\item
+The Validation Scientist analyzes a subset of the new data release by directly comparing it with the current Data Release.
+
+\item
+A statistical analysis is done with the catalogs derived from both data releases to determine if the new data release is suitable for release.
+
+}
+
+\usecase{DRP32}{Use of rerun collections}{%
+
+\item
+A Developer runs some processing starting from outputs produced by the Batch Production Operators or another Developer, where those outputs are specified as inputs using a label given as a single string (possibly with path-like namespace components).
+They specify a new label to use for the output data location.
+When the processing completes, all of the contents of the inputs (or at least all of the items actually used as inputs) will appear to be present in the output collection.
+
+\item
+The developer then wants to run additional processing with both inputs and outputs coming from what was previously just the output collection.
+
+}
+
 \section{Science Quality and Reliability Engineering}
 
 \usecase{SQR1}{QA Drilldown}{%
@@ -1110,6 +1136,18 @@ They would like to stream just the subsection of the tract specifically needed.
 A Commissioning Scientist wants to do some historical analysis.
 They would like to use the LSP to start their analysis.
 This could include even getting data in deep storage on tape.
+
+}
+
+\usecase{SQR17}{Retrieve Job data based on metric values.}{%
+
+\item
+On a regular cadence, the continuous integration system runs a script that generates measurements of various properties of a test dataset: e.g. photometric and astrometric repeatability.
+These measurements with associated data are persisted as a JSON document describing a \texttt{Job} object.
+The JSON object is published to SQuaSH.
+
+\item
+At some later point, the SQuaRE scientist retrieves all \texttt{Job}s that were run in the last month where the measurement of the photometric repeatablity is greater than 15 mas.
 
 }
 
