@@ -1273,16 +1273,14 @@ After the necessary preprocessing, the Staff Scientist utilizes the same display
 
 \item[DatasetType] The conceptual type of which Datasets are instances (e.g.\ \texttt{calexp}).  A new DatasetType can be defined by combining a StorageClass, a DimensionGraph, and a string name.
 
-\item[DataRepository] A collection of Datasets that has the following three properties:
+\item[Collection] A group of Datasets that has the following three properties:
 \begin{itemize}
 \item Has at most one Dataset per DatasetRef;
 \item Has a label that humans can parse (i.e.\ RepositoryRef);
 \item Given a DatasetRef, provides enough information to construct a filename (or key for an object store, or other URI, or set thereof) that is unique across all DataRepositories in a DataRepositoryGroup.
 \end{itemize}
 
-\item[DataRepositoryGroup] A collection of related DataRepositories.
-
-\item[DataRepositoryRef] A human-parseable name for a DataRepository that uniquely identifies it within a DataRepositoryGroup.
+\item[DataRepository] A group of Datasets and Collections backed by a single database, but possibly multiple storage systems.
 
 \item[Dimension] A definition of a discrete unit of data (e.g. visit, tract, or filter) with a string or integer identifier.
 
