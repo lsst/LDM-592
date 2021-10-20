@@ -1257,19 +1257,21 @@ After the necessary preprocessing, the Staff Scientist utilizes the same display
 
 \item[Composite Dataset] A Dataset made up of more than one items which are themselves Datasets (e.g.\ \texttt{MaskedImage} + PSF + Metadata = \texttt{Exposure})
 
-\item[DataGraph] A graph structure containing DatasetRefs and DataUnits as vertices and the connections between them as edges.
+\item[Quantum] An indivisible unit of work that consumes and produces Datasets.
+
+\item[QuantumGraph] A graph structure containing DatasetRefs and Quanta as vertices and the connections between them as edges.
 
 \item[Dataset] Represents a single discrete entity of data, with associated metadata (e.g.\ a particular \texttt{calexp} for a particular instrument corresponding to a particular visit and sensor).
 
-\item[DatasetExpression] A expression matching one or more Datasets; something like a SQL WHERE against a common schema in which each DataUnit is a table.
+\item[DatasetExpression] A expression matching one or more Datasets; something like a SQL WHERE against a common schema in which each Dimension is a table.
 
-\item[DatasetIdentifier (or DataID)] A tuple of DataUnits that can be used to label a Dataset.
+\item[DataCoordinate (or DataID)] A mapping with Dimension keys and identifiers for those dimension that can be used to label a Dataset.
 
-\item[DatasetIdentifierType] A tuple of DataUnitTypes that describe the label for a DatasetType.
+\item[DimensionGraph] A tuple of Dimensions that describe the label for a DatasetType.
 
-\item[DatasetRef] The combination of a DatasetIdentifier and the name of DatasetType, which can be used to uniquely identify a Dataset within a DataRepository.
+\item[DatasetRef] The combination of a DataCoordinate and the name of DatasetType, which can be used to uniquely identify a Dataset within a DataRepository.
 
-\item[DatasetType] The conceptual type of which Datasets are instances (e.g.\ \texttt{calexp}).  A new DatasetType can be defined by combining a StorageClass, a DatasetIdentifierType, and a string name.
+\item[DatasetType] The conceptual type of which Datasets are instances (e.g.\ \texttt{calexp}).  A new DatasetType can be defined by combining a StorageClass, a DimensionGraph, and a string name.
 
 \item[DataRepository] A collection of Datasets that has the following three properties:
 \begin{itemize}
@@ -1282,11 +1284,9 @@ After the necessary preprocessing, the Staff Scientist utilizes the same display
 
 \item[DataRepositoryRef] A human-parseable name for a DataRepository that uniquely identifies it within a DataRepositoryGroup.
 
-\item[DataUnit] Represents a discrete unit of data (e.g.\ a particular visit, tract, or filter) that may be composed to form a DatasetIdentifier.
+\item[Dimension] A definition of a discrete unit of data (e.g. visit, tract, or filter) with a string or integer identifier.
 
-\item[DataUnitType] The conceptual type of which DataUnits are instances (e.g. visit, tract, or filter).
-
-\item[Data Discovery System] A software agent that can be used to identify, filter, and relate Dataset and DataUnits using their metadata.
+\item[Data Discovery System] A software agent that can be used to identify, filter, and relate Dataset and Dimensions using their metadata.
 
 \item[Data Input System] A software agent that can be used to read a Dataset from storage into a InMemoryDataset in memory.
 
